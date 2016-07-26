@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpunit
+    bootstrap="./tests.php"
+    backupGlobals="false"
+    backupStaticAttributes="false"
+    beStrictAboutTestsThatDoNotTestAnything="true"
+    beStrictAboutOutputDuringTests="true"
+    beStrictAboutTestSize="true"
+    verbose="true"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    processIsolation="false"
+    stopOnFailure="false"
+    syntaxCheck="true"
+>
+    <logging>
+        <log type="coverage-html" target="./../temporary/build/coverage" />
+        <log type="coverage-xml" target="./../temporary/build/logs/coverage.xml" />
+        <log type="coverage-clover" target="./../temporary/build/logs/clover.xml" />
+        <log type="coverage-crap4j" target="./../temporary/build/logs/crap4j.xml" />
+        <log type="junit" target="./../temporary/build/logs/junit.xml" logIncompleteSkipped="false" />
+    </logging>
+
+    <filter>
+        <whitelist>
+            <file>./../opendomainregistry/opendomainregistry.php</file>
+
+            <exclude>
+                <file>./../opendomainregistry/api.php</file>
+            </exclude>
+        </whitelist>
+
+        <blacklist>
+            <directory>./../vendor/</directory>
+            <directory>./../temporary/</directory>
+        </blacklist>
+    </filter>
+
+    <testsuite name="tmv-whmcs-odr">
+        <directory>./Tests/*</directory>
+    </testsuite>
+</phpunit>

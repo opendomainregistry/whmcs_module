@@ -1,0 +1,31 @@
+<phpdox xmlns="http://xml.phpdox.net/config">
+    <project name="ODR module for WHMCS" source="build" workdir="${basedir}/build/phpdox/xml">
+        <collector publiconly="false">
+            <include mask="*.php" />
+        </collector>
+
+        <generator output="${basedir}/manual">
+            <enrich base="${basedir}">
+                <source type="phpunit">
+                    <coverage path="temporary/build/logs/coverage.xml" />
+                </source>
+            </enrich>
+
+            <enrich base="${basedir}">
+                <source type="phploc">
+                    <file name="temporary/build/logs/phploc.xml" />
+                </source>
+            </enrich>
+
+            <enrich base="${basedir}">
+                <source type="pmd">
+                    <file name="temporary/build/logs/pmd.xml" />
+                </source>
+            </enrich>
+
+            <build engine="html" enabled="true" output="html">
+                <template dir="${phpDox.home}/templates/html" />
+            </build>
+        </generator>
+    </project>
+</phpdox>

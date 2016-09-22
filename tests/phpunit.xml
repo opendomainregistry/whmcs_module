@@ -25,10 +25,11 @@
 
     <filter>
         <whitelist>
-            <file>./../opendomainregistry/opendomainregistry.php</file>
+            <file>./../src/odr.php</file>
 
             <exclude>
-                <file>./../opendomainregistry/api.php</file>
+                <file>./../src/helpers.php</file>
+                <file>./../src/3rdparty/functions.php</file>
             </exclude>
         </whitelist>
 

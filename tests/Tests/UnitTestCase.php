@@ -1,8 +1,6 @@
 <?php
 namespace Tests;
 
-use \opendomainregistry as Module;
-
 use Mocks;
 
 abstract class UnitTestCase extends \PHPUnit_Framework_TestCase
@@ -34,9 +32,11 @@ abstract class UnitTestCase extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->_isLoaded = true;
+        $_REQUEST = array();
+        $_SESSION = array();
+        $_COOKIE  = array();
 
-        $_SESSION[Module::ODR_TOKEN_SESSION] = null;
+        $this->_isLoaded = true;
     }
 
     /**
@@ -129,17 +129,11 @@ abstract class UnitTestCase extends \PHPUnit_Framework_TestCase
 
     public function getModule()
     {
-        $module = new Module;
-
-        $module->User     = 'public$success';
-        $module->Password = 'secret$success';
-        $module->Testmode = true;
-
-        $module->odr = new Mocks\Odr(
+        $module = new Mocks\Odr(
             array(
-                'api_key'    => $module->User,
-                'api_secret' => $module->Password,
-                'url'        => $module->Testmode ? Module::URL_TEST : Module::URL_LIVE,
+                'api_key'    => 'public$success',
+                'api_secret' => 'secret$success',
+                'url'        => \Odr_Whmcs::URL_TEST,
             )
         );
 

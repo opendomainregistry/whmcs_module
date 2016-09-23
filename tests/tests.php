@@ -3,6 +3,7 @@ set_include_path(realpath(__DIR__) .'/../' . PATH_SEPARATOR . get_include_path()
 
 require_once 'vendor/autoload.php';
 
+require_once 'src/3rdparty/functions.php';
 require_once 'src/helpers.php';
 require_once 'src/odr.php';
 

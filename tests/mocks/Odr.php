@@ -349,6 +349,38 @@ class Odr extends \Api_Odr
             );
         }
 
+        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$zero') === 0) {
+            list($name, $tld) = explode('.', $domain, 2);
+
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'domain_id'   => 4,
+                        'domain_name' => $name,
+                        'auth_code'   => null,
+                    ),
+                )
+            );
+        }
+
+        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$true') === 0) {
+            list($name, $tld) = explode('.', $domain, 2);
+
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'domain_id'   => 4,
+                        'domain_name' => $name,
+                        'auth_code'   => true,
+                    ),
+                )
+            );
+        }
+
         return $this->setResult(
             array(
                 'status'   => self::STATUS_ERROR,

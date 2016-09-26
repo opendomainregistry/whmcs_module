@@ -159,15 +159,7 @@ function odr_SaveNameservers($params)
 
     $resp = $result['response'];
 
-    $data['period']             = $params['regperiod'];
-    $data['contact_registrant'] = $resp['contacts_map']['REGISTRANT'];
-    $data['contact_onsite']     = $resp['contacts_map']['ONSITE'];
-    $data['contact_tech']       = empty($resp['contacts_map']['TECH']) ? $resp['contacts_map']['ONSITE'] : $resp['contacts_map']['TECH'];
-    $data['ns1']                = $params['ns1'];
-    $data['ns2']                = $params['ns2'];
-    $data['ns3']                = $params['ns3'];
-    $data['ns4']                = $params['ns4'];
-    $data['ns5']                = $params['ns5'];
+    $data = \Odr_Whmcs::prepareDomainData($params, $resp['contacts_map']['REGISTRANT'], $resp['contacts_map']['ONSITE'], empty($resp['contacts_map']['TECH']) ? $resp['contacts_map']['ONSITE'] : $resp['contacts_map']['TECH']);
 
     try {
         $result = $module->updateDomain($params['domainname'], $data)->getResult();
@@ -227,22 +219,7 @@ function odr_RegisterDomain($params)
         return $values;
     }
 
-    $domainData['period']             = $params['regperiod'];
-    $domainData['contact_registrant'] = $contactId;
-    $domainData['contact_onsite']     = $contactId;
-    $domainData['contact_tech']       = $contactId;
-    $domainData['ns1']['host']        = $params['ns1'];
-    $domainData['ns2']['host']        = $params['ns2'];
-
-    $k = 3;
-
-    for ($i = $k; $i <= 5; $i++) {
-        if (!empty($params['ns' . $i])) {
-            $domainData['ns' . $k] = $params['ns' . $k];
-
-            $k++;
-        }
-    }
+    $domainData = \Odr_Whmcs::prepareDomainData($params, $contactId);
 
     try {
         $result = $module->registerDomain($params['domainname'], $domainData)->getResult();
@@ -302,23 +279,7 @@ function odr_TransferDomain($params)
         return $values;
     }
 
-    $domainData['auth_code']          = $params['transfersecret'];
-    $domainData['period']             = $params['regperiod'];
-    $domainData['contact_registrant'] = $contactId;
-    $domainData['contact_onsite']     = $contactId;
-    $domainData['contact_tech']       = $contactId;
-    $domainData['ns1']['host']        = $params['ns1'];
-    $domainData['ns2']['host']        = $params['ns2'];
-
-    $k = 3;
-
-    for ($i = $k; $i <= 5; $i++) {
-        if (!empty($params['ns' . $i])) {
-            $domainData['ns' . $k] = $params['ns' . $k];
-
-            $k++;
-        }
-    }
+    $domainData = \Odr_Whmcs::prepareDomainData($params, $contactId);
 
     try {
         $result = $module->transferDomain($params['domainname'], $domainData)->getResult();
@@ -1008,5 +969,41 @@ class Odr_Whmcs
         }
 
         return empty($result['response']['data']['id']) ? null : $result['response']['data']['id'];
+    }
+
+    static public function prepareDomainData(array $params, $contactRegistrant, $contactOnsite = null, $contactTech = null)
+    {
+        if ($contactOnsite === null) {
+            $contactOnsite = $contactRegistrant;
+        }
+
+        if ($contactTech === null) {
+            $contactTech = $contactRegistrant;
+        }
+
+        $domain = array();
+
+        if (!empty($params['transfersecret'])) {
+            $domain['auth_code'] = $params['transfersecret'];
+        }
+
+        $domain['period']             = $params['regperiod'];
+        $domain['contact_registrant'] = $contactRegistrant;
+        $domain['contact_onsite']     = $contactOnsite;
+        $domain['contact_tech']       = $contactTech;
+        $domain['ns1']['host']        = $params['ns1'];
+        $domain['ns2']['host']        = $params['ns2'];
+
+        $k = 3;
+
+        for ($i = $k; $i <= 5; $i++) {
+            if (!empty($params['ns' . $i])) {
+                $domain['ns' . $k] = $params['ns' . $k];
+
+                $k++;
+            }
+        }
+
+        return $domain;
     }
 }

@@ -100,7 +100,7 @@
         <apply executable="php" taskname="lint">
             <arg value="-l" />
 
-            <fileset dir="${basedir}/opendomainregistry">
+            <fileset dir="${basedir}/src">
                 <include name="**/*.php" />
                 <modified />
             </fileset>
@@ -117,7 +117,7 @@
     <target name="phploc" unless="phploc.done" description="Measure project size using PHPLOC and print human readable output. Intended for usage on the command line.">
         <exec executable="${phploc}" taskname="phploc">
             <arg value="--count-tests" />
-            <arg path="${basedir}/opendomainregistry" />
+            <arg path="${basedir}/src" />
             <arg path="${basedir}/tests" />
         </exec>
 
@@ -132,7 +132,7 @@
             <arg value="--log-xml" />
             <arg path="${basedir}/temporary/build/logs/phploc.xml" />
 
-            <arg path="${basedir}/opendomainregistry" />
+            <arg path="${basedir}/src" />
             <arg path="${basedir}/tests" />
         </exec>
 
@@ -144,7 +144,7 @@
             <arg value="--jdepend-xml=${basedir}/temporary/build/logs/jdepend.xml" />
             <arg value="--jdepend-chart=${basedir}/temporary/build/pdepend/dependencies.svg" />
             <arg value="--overview-pyramid=${basedir}/temporary/build/pdepend/overview-pyramid.svg" />
-            <arg path="${basedir}/opendomainregistry" />
+            <arg path="${basedir}/src" />
         </exec>
 
         <property name="pdepend.done" value="true" />
@@ -152,7 +152,7 @@
 
     <target name="phpmd" unless="phpmd.done" description="Perform project mess detection using PHPMD and print human readable output. Intended for usage on the command line before committing.">
         <exec executable="${phpmd}" taskname="phpmd">
-            <arg path="${basedir}/opendomainregistry/opendomainregistry.php" />
+            <arg path="${basedir}/src/odr.php" />
             <arg value="text" />
             <arg path="${basedir}/.phpmd" />
         </exec>
@@ -162,7 +162,7 @@
 
     <target name="phpmd-ci" unless="phpmd.done" depends="prepare" description="Perform project mess detection using PHPMD and log result in XML format. Intended for usage within a continuous integration environment.">
         <exec executable="${phpmd}" taskname="phpmd">
-            <arg path="${basedir}/opendomainregistry/opendomainregistry.php" />
+            <arg path="${basedir}/src/odr.php" />
             <arg value="xml" />
             <arg path="${basedir}/.phpmd" />
 
@@ -175,7 +175,7 @@
 
     <target name="phpcpd" unless="phpcpd.done" description="Find duplicate code using PHPCPD and print human readable output. Intended for usage on the command line before committing.">
         <exec executable="${phpcpd}" taskname="phpcpd">
-            <arg path="${basedir}/opendomainregistry/opendomainregistry.php" />
+            <arg path="${basedir}/src/odr.php" />
         </exec>
 
         <property name="phpcpd.done" value="true" />
@@ -186,7 +186,7 @@
             <arg value="--log-pmd" />
             <arg path="${basedir}/temporary/build/logs/pmd-cpd.xml" />
 
-            <arg path="${basedir}/opendomainregistry/opendomainregistry.php" />
+            <arg path="${basedir}/src/odr.php" />
         </exec>
 
         <property name="phpcpd.done" value="true" />
@@ -229,9 +229,9 @@
     </target>
 
     <target name="-finalize">
-        <copy file="${basedir}/opendomainregistry/helpers.php" tofile="${basedir}/build/opendomainregistry/helpers.php" />
-        <copy file="${basedir}/opendomainregistry/opendomainregistry.php" tofile="${basedir}/build/opendomainregistry/opendomainregistry.php" />
-        <copy file="${basedir}/opendomainregistry/version.php" tofile="${basedir}/build/opendomainregistry/version.php" />
+        <copy file="${basedir}/src/helpers.php" tofile="${basedir}/build/odr/helpers.php" />
+        <copy file="${basedir}/src/odr.php" tofile="${basedir}/build/odr/odr.php" />
+        <copy file="${basedir}/src/logo.gif" tofile="${basedir}/build/odr/logo.gif" />
         <copy file="${basedir}/README.md" tofile="${basedir}/build/opendomainregistry/README.md" />
 
         <zip destfile="${basedir}/build/latest.zip" basedir="build" />

@@ -108,7 +108,7 @@ function odr_GetNameservers($params)
 
     try {
         $result = $module->getDomainInfo($params['domainname'])->getResult();
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         $values['error'] = 'Following error occurred: ' . $e->getMessage();
 
         return $values;
@@ -145,7 +145,7 @@ function odr_SaveNameservers($params)
 
     try {
         $result = $module->getDomainInfo($params['domainname'])->getResult();
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         $values['error'] = 'Following error occurred: ' . $e->getMessage();
 
         return $values;
@@ -159,11 +159,11 @@ function odr_SaveNameservers($params)
 
     $resp = $result['response'];
 
-    $data = \Odr_Whmcs::prepareDomainData($params, $resp['contacts_map']['REGISTRANT'], $resp['contacts_map']['ONSITE'], empty($resp['contacts_map']['TECH']) ? $resp['contacts_map']['ONSITE'] : $resp['contacts_map']['TECH']);
+    $data = Odr_Whmcs::prepareDomainData($params, $resp['contacts_map']['REGISTRANT'], $resp['contacts_map']['ONSITE'], empty($resp['contacts_map']['TECH']) ? $resp['contacts_map']['ONSITE'] : $resp['contacts_map']['TECH']);
 
     try {
         $result = $module->updateDomain($params['domainname'], $data)->getResult();
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         $values['error'] = 'Following error occurred: ' . $e->getMessage();
 
         return $values;
@@ -188,42 +188,17 @@ function odr_RegisterDomain($params)
         return $login;
     }
 
-    try {
-        $result = $module->getContacts()->getResult();
-    } catch (\Exception $e) {
-        $values['error'] = 'Following error occurred: ' . $e->getMessage();
+    $contactId = Odr_Whmcs::obtainContact($module, $params);
 
-        return $values;
+    if (!empty($contactId['error'])) {
+        return $contactId;
     }
 
-    if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-        $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
-
-        return $values;
-    }
-
-    $contactId = Odr_Whmcs::searchContact(Odr_Whmcs::formatContactName($params['firstname'], $params['lastname'], $params['companyname']), $result['response']);
-
-    // Contact doesn't exist, create a new
-    if ($contactId === null) {
-        $contactId = \Odr_Whmcs::obtainContact($module, $params);
-
-        if (!empty($contactId['error'])) {
-            return $contactId;
-        }
-    }
-
-    if ($contactId === null) {
-        $values['error'] = 'Contact creation was not successful, please either try using different data or contact support';
-
-        return $values;
-    }
-
-    $domainData = \Odr_Whmcs::prepareDomainData($params, $contactId);
+    $domainData = Odr_Whmcs::prepareDomainData($params, $contactId);
 
     try {
         $result = $module->registerDomain($params['domainname'], $domainData)->getResult();
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         $values['error'] = 'Following error occurred: ' . $e->getMessage();
 
         return $values;
@@ -248,35 +223,10 @@ function odr_TransferDomain($params)
         return $login;
     }
 
-    try {
-        $result = $module->getContacts()->getResult();
-    } catch (\Exception $e) {
-        $values['error'] = 'Following error occurred: ' . $e->getMessage();
+    $contactId = Odr_Whmcs::obtainContact($module, $params);
 
-        return $values;
-    }
-
-    if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-        $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
-
-        return $values;
-    }
-
-    $contactId = Odr_Whmcs::searchContact(Odr_Whmcs::formatContactName($params['firstname'], $params['lastname'], $params['companyname']), $result['response']);
-
-    // Contact doesn't exist, create a new
-    if ($contactId === null) {
-        $contactId = \Odr_Whmcs::obtainContact($module, $params);
-
-        if (!empty($contactId['error'])) {
-            return $contactId;
-        }
-    }
-
-    if ($contactId === null) {
-        $values['error'] = 'Contact creation was not successful, please either try using different data or contact support';
-
-        return $values;
+    if (!empty($contactId['error'])) {
+        return $contactId;
     }
 
     $domainData = \Odr_Whmcs::prepareDomainData($params, $contactId);
@@ -944,18 +894,12 @@ class Odr_Whmcs
         );
     }
 
-    static public function obtainContact(\Api_Odr $module, array $params)
+    static public function obtainContact(Api_Odr $module, array $params)
     {
-        $contactData = Odr_Whmcs::contactDataToOdr($params);
-
-        if ($contactData === null || is_string($contactData)) {
-            $values['error'] = 'Following error occurred: ' . (is_string($contactData) ? $contactData : 'Contact creation is impossible, due to corrupted data');
-
-            return $values;
-        }
+        $values = array();
 
         try {
-            $result = $module->createContact($contactData)->getResult();
+            $result = $module->getContacts()->getResult();
         } catch (\Exception $e) {
             $values['error'] = 'Following error occurred: ' . $e->getMessage();
 
@@ -968,7 +912,42 @@ class Odr_Whmcs
             return $values;
         }
 
-        return empty($result['response']['data']['id']) ? null : $result['response']['data']['id'];
+        $contactId = Odr_Whmcs::searchContact(Odr_Whmcs::formatContactName($params['firstname'], $params['lastname'], $params['companyname']), $result['response']);
+
+        // Contact doesn't exist, create a new
+        if ($contactId === null) {
+            $contactData = Odr_Whmcs::contactDataToOdr($params);
+
+            if ($contactData === null || is_string($contactData)) {
+                $values['error'] = 'Following error occurred: ' . (is_string($contactData) ? $contactData : 'Contact creation is impossible, due to corrupted data');
+
+                return $values;
+            }
+
+            try {
+                $result = $module->createContact($contactData)->getResult();
+            } catch (\Exception $e) {
+                $values['error'] = 'Following error occurred: ' . $e->getMessage();
+
+                return $values;
+            }
+
+            if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
+                $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
+
+                return $values;
+            }
+
+            $contactId = empty($result['response']['data']['id']) ? null : $result['response']['data']['id'];
+        }
+
+        if ($contactId === null) {
+            $values['error'] = 'Contact creation was not successful, please either try using different data or contact support';
+
+            return $values;
+        }
+
+        return $contactId;
     }
 
     static public function prepareDomainData(array $params, $contactRegistrant, $contactOnsite = null, $contactTech = null)

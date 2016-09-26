@@ -66,6 +66,24 @@ function odr_getConfigArray()
             'Type'         => 'yesno',
             'Default'      => false,
         ),
+
+        'EnableLogs'       => array(
+            'FriendlyName' => 'Enable testing logs',
+            'Type'         => 'yesno',
+            'Default'      => false,
+            'Description'  => "Enables log writing for debugging purposes."
+                . " Before enabling, please, be sure to create '/log/' folder (or value from 'logsPath') and set write permissions for it.",
+        ),
+
+        'logsPath'       => array(
+            'FriendlyName' => 'Enable testing logs',
+            'Type'         => 'text',
+            'Size'         => 50,
+            'Default'      => __DIR__ . '/log/api' . date('Ymd_H') .'.log',
+            'Description'  => "Pick custom log path."
+                . " If logs are disable, this option will be ignored"
+                . " You can use following replacements: #DAY#, #MONTH#, #YEAR#, #HOUR#",
+        ),
     );
 }
 
@@ -805,9 +823,11 @@ class Odr_Whmcs
         }
 
         $module = array(
-            'api_key'    => $isTestmode && $params['TestApiKey']    ? $params['TestApiKey']    : $params['ApiKey'],
-            'api_secret' => $isTestmode && $params['TestApiSecret'] ? $params['TestApiSecret'] : $params['ApiSecret'],
-            'url'        => $isTestmode ? Odr_Whmcs::URL_TEST : Odr_Whmcs::URL_LIVE,
+            'api_key'     => $isTestmode && $params['TestApiKey']    ? $params['TestApiKey']    : $params['ApiKey'],
+            'api_secret'  => $isTestmode && $params['TestApiSecret'] ? $params['TestApiSecret'] : $params['ApiSecret'],
+            'url'         => $isTestmode ? Odr_Whmcs::URL_TEST : Odr_Whmcs::URL_LIVE,
+            'enable_logs' => !empty($params['EnableLogs']),
+            'logs_path'   => empty($params['LogsPath']) ? __DIR__ . '/log/api' . date('Ymd_H') .'.log' : $params['LogsPath'],
         );
 
         return new Api_Odr($module);

@@ -17,9 +17,9 @@ class GetModuleTest extends UnitTestCase
                     'Testmode'      => false,
                 ),
                 'expected' => array(
-                    'api_key'    => '1',
-                    'api_secret' => '2',
-                    'url'        => rtrim(\Odr_Whmcs::URL_LIVE, '/'),
+                    'api_key'     => '1',
+                    'api_secret'  => '2',
+                    'url'         => rtrim(\Odr_Whmcs::URL_LIVE, '/'),
                 ),
             ),
 
@@ -147,7 +147,17 @@ class GetModuleTest extends UnitTestCase
         foreach ($testable as $input) {
             $module = \Odr_Whmcs::getModule($input['params']);
 
-            self::assertEquals($input['expected'], $module->getConfig(), 'Input (' . implode(',', $input['params']) . ') not parsed correctly');
+            $config = $module->getConfig();
+
+            if (array_key_exists('enable_logs', $config)) {
+                unset($config['enable_logs']);
+            }
+
+            if (array_key_exists('logs_path', $config)) {
+                unset($config['logs_path']);
+            }
+
+            self::assertEquals($input['expected'], $config, 'Input (' . implode(',', $input['params']) . ') not parsed correctly');
         }
     }
 }

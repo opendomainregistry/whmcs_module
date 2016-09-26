@@ -147,7 +147,17 @@ class OdrConfigTest extends UnitTestCase
         foreach ($testable as $input) {
             $module = odr_Config($input['params']);
 
-            self::assertEquals($input['expected'], $module->getConfig(), 'Input (' . implode(',', $input['params']) . ') not parsed correctly');
+            $config = $module->getConfig();
+
+            if (array_key_exists('enable_logs', $config)) {
+                unset($config['enable_logs']);
+            }
+
+            if (array_key_exists('logs_path', $config)) {
+                unset($config['logs_path']);
+            }
+
+            self::assertEquals($input['expected'], $config, 'Input (' . implode(',', $input['params']) . ') not parsed correctly');
         }
     }
 }

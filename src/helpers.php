@@ -15,6 +15,8 @@ class Api_Odr
      */
     protected $_error;
 
+    protected $_logsEnabled = null;
+
     /**
      * @var array
      *
@@ -672,14 +674,25 @@ class Api_Odr
 
     public function log($message, $prio = 'normal')
     {
-        return true;
+        if (!$this->_logsEnabled === false || empty($this->_config['enable_logs'])) {
+            return true;
+        }
 
-        $file = __DIR__ .'/log/api' . date('Ymd_H') .'.log';
+        $filepath = empty($this->_config['logs_path']) ? __DIR__ . '/log/api' . date('Ymd_H') .'.log' : $this->_config['logs_path'];
 
-        if (!is_readable($file)) {
-            if (!is_dir(dirname($file))) {
-                mkdir(dirname($file), 0777, true);
-            }
+        $r = array(
+            '#DAY#'   => date('d'),
+            '#MONTH#' => date('m'),
+            '#YEAR#'  => date('Y'),
+            '#HOUR#'  => date('H'),
+        );
+
+        $file = str_replace(array_keys($r), array_values($r), $filepath);
+
+        if (!is_writeable($file) || !is_dir(dirname($file))) {
+            $this->_logsEnabled = false;
+
+            return true;
         }
 
         $data = json_encode($this->getResult());
@@ -689,6 +702,10 @@ class Api_Odr
 MESSAGE;
 
         error_log($to . "\r\n", 3, $file);
+
+        $this->_logsEnabled = true;
+
+        return true;
     }
 }
 

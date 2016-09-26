@@ -827,7 +827,7 @@ class Odr_Whmcs
             'api_secret'  => $isTestmode && $params['TestApiSecret'] ? $params['TestApiSecret'] : $params['ApiSecret'],
             'url'         => $isTestmode ? Odr_Whmcs::URL_TEST : Odr_Whmcs::URL_LIVE,
             'enable_logs' => !empty($params['EnableLogs']),
-            'logs_path'   => empty($params['LogsPath']) ? __DIR__ . '/log/api' . date('Ymd_H') .'.log' : $params['LogsPath'],
+            'logs_path'   => empty($params['LogsPath']) ? __DIR__ . '/log/odr#YEAR##MONTH##DAY#_#HOUR#.log' : $params['LogsPath'],
         );
 
         return new Api_Odr($module);

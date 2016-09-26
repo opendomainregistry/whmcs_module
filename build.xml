@@ -10,13 +10,13 @@
     </condition>
 
     <property name="php"        value="php" />
-    <property name="pdepend"    value="${basedir}/vendor/bin/pdepend.bat" />
-    <property name="phpcpd"     value="${basedir}/vendor/bin/phpcpd.bat" />
-    <property name="phploc"     value="${basedir}/vendor/bin/phploc.bat" />
-    <property name="phpmd"      value="${basedir}/vendor/bin/phpmd.bat" />
-    <property name="phpunit"    value="${basedir}/vendor/bin/phpunit.bat" />
-    <property name="phpmetrics" value="${basedir}/vendor/bin/phpmetrics.bat" />
-    <property name="phpdox"     value="${basedir}/vendor/bin/phpdox.bat" />
+    <property name="pdepend"    value="${basedir}/vendor/bin/pdepend" />
+    <property name="phpcpd"     value="${basedir}/vendor/bin/phpcpd" />
+    <property name="phploc"     value="${basedir}/vendor/bin/phploc" />
+    <property name="phpmd"      value="${basedir}/vendor/bin/phpmd" />
+    <property name="phpunit"    value="${basedir}/vendor/bin/phpunit" />
+    <property name="phpmetrics" value="${basedir}/vendor/bin/phpmetrics" />
+    <property name="phpdox"     value="${basedir}/vendor/bin/phpdox" />
     <property name="composer"   value="${basedir}/composer.phar" />
 
     <target name="composer-check">

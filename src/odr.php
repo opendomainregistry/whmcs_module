@@ -76,9 +76,9 @@ function odr_getConfigArray()
         ),
 
         'logsPath'       => array(
-            'FriendlyName' => 'Enable testing logs',
+            'FriendlyName' => 'Debug log file path',
             'Type'         => 'text',
-            'Size'         => 50,
+            'Size'         => 256,
             'Default'      => __DIR__ . '/log/api' . date('Ymd_H') .'.log',
             'Description'  => "Pick custom log path."
                 . " If logs are disable, this option will be ignored"

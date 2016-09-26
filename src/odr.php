@@ -577,42 +577,6 @@ function odr_RequestDelete($params)
     return $values;
 }
 
-/* function odr_GetContactDetails($params) {
-    $username = $params['Username'];
-    $password = $params['Password'];
-    $testmode = $params['TestMode'];
-    $tld = $params['tld'];
-    $sld = $params['sld'];
-    # Put your code to get WHOIS data here
-    # Data should be returned in an array as follows
-    $values['Registrant']['First Name'] = $firstname;
-    $values['Registrant']['Last Name'] = $lastname;
-    $values['Admin']['First Name'] = $adminfirstname;
-    $values['Admin']['Last Name'] = $adminlastname;
-    $values['Tech']['First Name'] = $techfirstname;
-    $values['Tech']['Last Name'] = $techlastname;
-    return $values;
-} */
-
-/* function odr_SaveContactDetails($params) {
-    $username = $params['Username'];
-    $password = $params['Password'];
-    $testmode = $params['TestMode'];
-    $tld = $params['tld'];
-    $sld = $params['sld'];
-    # Data is returned as specified in the GetContactDetails() function
-    $firstname = $params['contactdetails']['Registrant']['First Name'];
-    $lastname = $params['contactdetails']['Registrant']['Last Name'];
-    $adminfirstname = $params['contactdetails']['Admin']['First Name'];
-    $adminlastname = $params['contactdetails']['Admin']['Last Name'];
-    $techfirstname = $params['contactdetails']['Tech']['First Name'];
-    $techlastname = $params['contactdetails']['Tech']['Last Name'];
-    # Put your code to save new WHOIS data here
-    # If error, return the error message in the value below
-    $values['error'] = $error;
-    return $values;
-} */
-
 class Odr_Whmcs
 {
     const STATUS_SUCCESS = 'success';

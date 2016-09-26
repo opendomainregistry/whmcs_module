@@ -26,9 +26,6 @@ class OdrGetNameserversTest extends UnitTestCase
             'ApiSecret'     => 'secret$live',
             'TestApiKey'    => 'public$test',
             'TestApiSecret' => 'secret$test',
-            'Adminuser'     => 'admin',
-            'Synccontact'   => 'on',
-            'Syncdomain'    => 'on',
             'Testmode'      => 'on',
             'Primarydomain' => '',
             'domainObj'     => array(),
@@ -63,9 +60,6 @@ class OdrGetNameserversTest extends UnitTestCase
             'ApiSecret'     => 'secret$live',
             'TestApiKey'    => 'public$test',
             'TestApiSecret' => 'secret$test',
-            'Adminuser'     => 'admin',
-            'Synccontact'   => 'on',
-            'Syncdomain'    => 'on',
             'Testmode'      => 'on',
             'Primarydomain' => '',
             'domainObj'     => array(),
@@ -76,7 +70,7 @@ class OdrGetNameserversTest extends UnitTestCase
             'registrar'     => 'odr',
         );
 
-        self::assertEquals(array('domainid' => '1', 'error' => 'Following error occurred: Forced error'), odr_GetNameservers($data));
+        self::assertEquals(array('error' => 'Following error occurred: Forced error'), odr_GetNameservers($data));
     }
 
     public function testException()
@@ -100,9 +94,6 @@ class OdrGetNameserversTest extends UnitTestCase
             'ApiSecret'     => 'secret$live',
             'TestApiKey'    => 'public$test',
             'TestApiSecret' => 'secret$test',
-            'Adminuser'     => 'admin',
-            'Synccontact'   => 'on',
-            'Syncdomain'    => 'on',
             'Testmode'      => 'on',
             'Primarydomain' => '',
             'domainObj'     => array(),
@@ -113,7 +104,7 @@ class OdrGetNameserversTest extends UnitTestCase
             'registrar'     => 'odr',
         );
 
-        self::assertEquals(array('domainid' => '1', 'error' => 'Following error occurred: ' . $module::MESSAGE_CURL_ERROR_FOUND), odr_GetNameservers($data));
+        self::assertEquals(array('error' => 'Following error occurred: ' . $module::MESSAGE_CURL_ERROR_FOUND), odr_GetNameservers($data));
     }
 
     public function testSuccess()
@@ -137,9 +128,6 @@ class OdrGetNameserversTest extends UnitTestCase
             'ApiSecret'     => 'secret$live',
             'TestApiKey'    => 'public$test',
             'TestApiSecret' => 'secret$test',
-            'Adminuser'     => 'admin',
-            'Synccontact'   => 'on',
-            'Syncdomain'    => 'on',
             'Testmode'      => 'on',
             'Primarydomain' => '',
             'domainObj'     => array(),
@@ -150,6 +138,6 @@ class OdrGetNameserversTest extends UnitTestCase
             'registrar'     => 'odr',
         );
 
-        self::assertEquals(array('domainid' => '1', 'ns1' => 'ns1.test.ru', 'ns2' => 'ns2.test.ru'), odr_GetNameservers($data));
+        self::assertEquals(array('ns1' => 'ns1.test.ru', 'ns2' => 'ns2.test.ru'), odr_GetNameservers($data));
     }
 }

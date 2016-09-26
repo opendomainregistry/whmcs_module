@@ -141,6 +141,100 @@ class Odr extends \Api_Odr
         );
     }
 
+    public function getDomain($id)
+    {
+        if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$throw') === 0) {
+            return $this->setError('Forced error');
+        }
+
+        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$success') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'id'              => '1',
+                        'name'            => 'test',
+                        'api_handle'      => 'test',
+                        'tld'             => 'nl',
+                        'status'          => 'REGISTERED',
+                        'created'         => date('Y') . '-01-01 00:00:00',
+                        'updated'         => date('Y') . '-01-01 00:00:00',
+                        'expiration_date' => (date('Y') + 1) . '-01-01 00:00:00',
+                    ),
+                )
+            );
+        }
+
+        if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$sudeleted') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'id'              => '1',
+                        'name'            => 'test',
+                        'api_handle'      => 'test',
+                        'tld'             => 'nl',
+                        'status'          => 'DELETED',
+                        'created'         => date('Y') . '-01-01 00:00:00',
+                        'updated'         => date('Y') . '-01-01 00:00:00',
+                        'expiration_date' => (date('Y') + 1) . '-01-01 00:00:00',
+                    ),
+                )
+            );
+        }
+
+        if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$suquarantine') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'id'              => '1',
+                        'name'            => 'test',
+                        'api_handle'      => 'test',
+                        'status'          => 'QUARANTINE',
+                        'tld'             => 'nl',
+                        'created'         => date('Y') . '-01-01 00:00:00',
+                        'updated'         => date('Y') . '-01-01 00:00:00',
+                        'expiration_date' => (date('Y') + 1) . '-01-01 00:00:00',
+                    ),
+                )
+            );
+        }
+
+        if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$supending') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'id'              => '1',
+                        'name'            => 'test',
+                        'api_handle'      => 'test',
+                        'status'          => 'PENDING',
+                        'tld'             => 'nl',
+                        'created'         => date('Y') . '-01-01 00:00:00',
+                        'updated'         => date('Y') . '-01-01 00:00:00',
+                        'expiration_date' => (date('Y') + 1) . '-01-01 00:00:00',
+                    ),
+                )
+            );
+        }
+
+        return $this->setResult(
+            array(
+                'status'   => self::STATUS_ERROR,
+                'code'     => 404,
+                'response' => array(
+                    'message' => 'Forced error',
+                    'data'    => array(),
+                ),
+            )
+        );
+    }
+
     public function checkDomain($domain)
     {
         if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$throw') === 0) {
@@ -154,6 +248,61 @@ class Odr extends \Api_Odr
                     'code'     => 200,
                     'response' => array(
                         'is_available' => $domain === 'test.nl',
+                    ),
+                )
+            );
+        }
+
+        return $this->setResult(
+            array(
+                'status'   => self::STATUS_ERROR,
+                'code'     => 404,
+                'response' => array(
+                    'message' => 'Forced error',
+                    'data'    => array(),
+                ),
+            )
+        );
+    }
+
+    public function reactivateDomain($domain)
+    {
+        if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$throw') === 0) {
+            return $this->setError('Forced error');
+        }
+
+        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$success') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'result' => $domain === 'test.nl',
+                    ),
+                )
+            );
+        }
+
+        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$suquarantinefalse') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_ERROR,
+                    'code'     => 404,
+                    'response' => array(
+                        'message' => 'Forced error',
+                        'data'    => array(),
+                    ),
+                )
+            );
+        }
+
+        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$suquarantine') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'result' => $domain === 'test.nl',
                     ),
                 )
             );
@@ -237,7 +386,109 @@ class Odr extends \Api_Odr
                         'domain_name'     => $name,
                         'autorenew'       => 'ON',
                         'tld'             => $tld,
-                        'expiration_date' => (date('Y') + 1) . '-01-01',
+                        'expiration_date' => (date('Y') + 1) . '-01-01 00:00:00',
+                        'auth_code'       => $tld === 'be' ? null : 'TEST1221TSET',
+                        'contacts'        => array(
+                            'REGISTRANT' => 'XXX001',
+                            'ONSITE'     => 'XXX001'
+                        ),
+                        'contacts_map'    => array(
+                            'REGISTRANT' => 24,
+                            'ONSITE'     => 32
+                        ),
+                        'nameservers' => array(
+                            'ns1.test.ru',
+                            'ns2.test.ru',
+                        ),
+                    ),
+                )
+            );
+        }
+
+        if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$sudeleted') === 0) {
+            list($name, $tld) = explode('.', $domain, 2);
+
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'id'              => 3,
+                        'domain_id'       => 3,
+                        'status'          => 'DELETED',
+                        'name'            => $name,
+                        'domain_name'     => $name,
+                        'autorenew'       => 'OFF',
+                        'tld'             => $tld,
+                        'expiration_date' => (date('Y') + 1) . '-01-01 00:00:00',
+                        'auth_code'       => $tld === 'be' ? null : 'TEST1221TSET',
+                        'contacts'        => array(
+                            'REGISTRANT' => 'XXX001',
+                            'ONSITE'     => 'XXX001'
+                        ),
+                        'contacts_map'    => array(
+                            'REGISTRANT' => 24,
+                            'ONSITE'     => 32
+                        ),
+                        'nameservers' => array(
+                            'ns1.test.ru',
+                            'ns2.test.ru',
+                        ),
+                    ),
+                )
+            );
+        }
+
+        if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$suquarantine') === 0) {
+            list($name, $tld) = explode('.', $domain, 2);
+
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'id'              => 3,
+                        'domain_id'       => 3,
+                        'status'          => 'QUARANTINE',
+                        'name'            => $name,
+                        'domain_name'     => $name,
+                        'autorenew'       => 'OFF',
+                        'tld'             => $tld,
+                        'expiration_date' => (date('Y') + 1) . '-01-01 00:00:00',
+                        'auth_code'       => $tld === 'be' ? null : 'TEST1221TSET',
+                        'contacts'        => array(
+                            'REGISTRANT' => 'XXX001',
+                            'ONSITE'     => 'XXX001'
+                        ),
+                        'contacts_map'    => array(
+                            'REGISTRANT' => 24,
+                            'ONSITE'     => 32
+                        ),
+                        'nameservers' => array(
+                            'ns1.test.ru',
+                            'ns2.test.ru',
+                        ),
+                    ),
+                )
+            );
+        }
+
+        if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$supending') === 0) {
+            list($name, $tld) = explode('.', $domain, 2);
+
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'id'              => 3,
+                        'domain_id'       => 3,
+                        'status'          => 'PENDING',
+                        'name'            => $name,
+                        'domain_name'     => $name,
+                        'autorenew'       => 'OFF',
+                        'tld'             => $tld,
+                        'expiration_date' => (date('Y') + 1) . '-01-01 00:00:00',
                         'auth_code'       => $tld === 'be' ? null : 'TEST1221TSET',
                         'contacts'        => array(
                             'REGISTRANT' => 'XXX001',
@@ -393,6 +644,90 @@ class Odr extends \Api_Odr
         );
     }
 
+    public function setDomainAutorenewOff($domain)
+    {
+        if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$throw') === 0) {
+            return $this->setError('Forced error');
+        }
+
+        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$success') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'result' => true,
+                    ),
+                )
+            );
+        }
+
+        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$false') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'result' => false,
+                    ),
+                )
+            );
+        }
+
+        return $this->setResult(
+            array(
+                'status'   => self::STATUS_ERROR,
+                'code'     => 404,
+                'response' => array(
+                    'message' => 'Forced error',
+                    'data'    => array(),
+                ),
+            )
+        );
+    }
+
+    public function setDomainAutorenewOn($domain)
+    {
+        if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$throw') === 0) {
+            return $this->setError('Forced error');
+        }
+
+        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$success') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'result' => true,
+                    ),
+                )
+            );
+        }
+
+        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$true') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'result' => false,
+                    ),
+                )
+            );
+        }
+
+        return $this->setResult(
+            array(
+                'status'   => self::STATUS_ERROR,
+                'code'     => 404,
+                'response' => array(
+                    'message' => 'Forced error',
+                    'data'    => array(),
+                ),
+            )
+        );
+    }
+
     public function getContacts(array $filters = array())
     {
         if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$throw') === 0) {
@@ -436,20 +771,64 @@ class Odr extends \Api_Odr
             return $this->setError('Forced error');
         }
 
-        if (!empty($this->_config['tokenRegister']) && strpos($this->_config['tokenRegister'], 'token$throw') === 0) {
+        if (!empty($this->_config['tokenRegisterDomain']) && strpos($this->_config['tokenRegisterDomain'], 'token$throw') === 0) {
             return $this->setError('Forced error');
         }
 
-        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$success') === 0) {
-            return $this->setResult(
-                array(
-                    'status'   => self::STATUS_SUCCESS,
-                    'code'     => 200,
-                    'response' => array(
-                        'result' => true,
-                    ),
-                )
-            );
+        if (empty($this->_config['tokenRegisterDomain'])) {
+            if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$success') === 0) {
+                return $this->setResult(
+                    array(
+                        'status'   => self::STATUS_SUCCESS,
+                        'code'     => 200,
+                        'response' => array(
+                            'data' => array(
+                                'domain_name'        => 'test',
+                                'period'             => 12,
+                                'contact_registrant' => 5,
+                                'contact_onsite'     => 5,
+                                'contact_tech'       => 5,
+                                'ns1'                => 'ns1.test.net',
+                                'ns2'                => 'ns2.test.net',
+                                'ns3'                => null,
+                                'ns4'                => null,
+                                'ns5'                => null,
+                                'ns6'                => null,
+                                'ns7'                => null,
+                                'ns8'                => null,
+                                'id'                 => 10,
+                            ),
+                        ),
+                    )
+                );
+            }
+        } else {
+            if (strpos($this->_config['tokenRegisterDomain'], 'token$success') === 0) {
+                return $this->setResult(
+                    array(
+                        'status'   => self::STATUS_SUCCESS,
+                        'code'     => 200,
+                        'response' => array(
+                            'data' => array(
+                                'domain_name'        => 'test',
+                                'period'             => 12,
+                                'contact_registrant' => 5,
+                                'contact_onsite'     => 5,
+                                'contact_tech'       => 5,
+                                'ns1'                => 'ns1.test.net',
+                                'ns2'                => 'ns2.test.net',
+                                'ns3'                => null,
+                                'ns4'                => null,
+                                'ns5'                => null,
+                                'ns6'                => null,
+                                'ns7'                => null,
+                                'ns8'                => null,
+                                'id'                 => 10,
+                            ),
+                        ),
+                    )
+                );
+            }
         }
 
         return $this->setResult(
@@ -470,20 +849,34 @@ class Odr extends \Api_Odr
             return $this->setError('Forced error');
         }
 
-        if (!empty($this->_config['tokenUpdate']) && strpos($this->_config['tokenUpdate'], 'token$throw') === 0) {
+        if (!empty($this->_config['tokenUpdateDomain']) && strpos($this->_config['tokenUpdateDomain'], 'token$throw') === 0) {
             return $this->setError('Forced error');
         }
 
-        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$success') === 0) {
-            return $this->setResult(
-                array(
-                    'status'   => self::STATUS_SUCCESS,
-                    'code'     => 200,
-                    'response' => array(
-                        'result' => true,
-                    ),
-                )
-            );
+        if (empty($this->_config['tokenUpdateDomain'])) {
+            if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$success') === 0) {
+                return $this->setResult(
+                    array(
+                        'status'   => self::STATUS_SUCCESS,
+                        'code'     => 200,
+                        'response' => array(
+                            'result' => true,
+                        ),
+                    )
+                );
+            }
+        } else {
+            if (strpos($this->_config['tokenUpdateDomain'], 'token$success') === 0) {
+                return $this->setResult(
+                    array(
+                        'status'   => self::STATUS_SUCCESS,
+                        'code'     => 200,
+                        'response' => array(
+                            'result' => true,
+                        ),
+                    )
+                );
+            }
         }
 
         return $this->setResult(
@@ -504,20 +897,64 @@ class Odr extends \Api_Odr
             return $this->setError('Forced error');
         }
 
-        if (!empty($this->_config['tokenTransfer']) && strpos($this->_config['tokenTransfer'], 'token$throw') === 0) {
+        if (!empty($this->_config['tokenTransferDomain']) && strpos($this->_config['tokenTransferDomain'], 'token$throw') === 0) {
             return $this->setError('Forced error');
         }
 
-        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$success') === 0) {
-            return $this->setResult(
-                array(
-                    'status'   => self::STATUS_SUCCESS,
-                    'code'     => 200,
-                    'response' => array(
-                        'result' => true,
-                    ),
-                )
-            );
+        if (empty($this->_config['tokenTransferDomain'])) {
+            if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$success') === 0) {
+                return $this->setResult(
+                    array(
+                        'status'   => self::STATUS_SUCCESS,
+                        'code'     => 200,
+                        'response' => array(
+                            'data' => array(
+                                'domain_name'        => 'test',
+                                'period'             => 12,
+                                'contact_registrant' => 5,
+                                'contact_onsite'     => 5,
+                                'contact_tech'       => 5,
+                                'ns1'                => 'ns1.test.net',
+                                'ns2'                => 'ns2.test.net',
+                                'ns3'                => null,
+                                'ns4'                => null,
+                                'ns5'                => null,
+                                'ns6'                => null,
+                                'ns7'                => null,
+                                'ns8'                => null,
+                                'id'                 => 10,
+                            ),
+                        ),
+                    )
+                );
+            }
+        } else {
+            if (strpos($this->_config['tokenTransferDomain'], 'token$success') === 0) {
+                return $this->setResult(
+                    array(
+                        'status'   => self::STATUS_SUCCESS,
+                        'code'     => 200,
+                        'response' => array(
+                            'data' => array(
+                                'domain_name'        => 'test',
+                                'period'             => 12,
+                                'contact_registrant' => 5,
+                                'contact_onsite'     => 5,
+                                'contact_tech'       => 5,
+                                'ns1'                => 'ns1.test.net',
+                                'ns2'                => 'ns2.test.net',
+                                'ns3'                => null,
+                                'ns4'                => null,
+                                'ns5'                => null,
+                                'ns6'                => null,
+                                'ns7'                => null,
+                                'ns8'                => null,
+                                'id'                 => 10,
+                            ),
+                        ),
+                    )
+                );
+            }
         }
 
         return $this->setResult(
@@ -534,36 +971,69 @@ class Odr extends \Api_Odr
 
     public function createContact(array $data)
     {
-        if (!empty($this->_config['tokenCreateContact']) && strpos($this->_config['tokenCreateContact'], 'token$success') === 0) {
-            return $this->setResult(
-                array(
-                    'status'   => self::STATUS_SUCCESS,
-                    'code'     => 200,
-                    'response' => array(
-                        'data' => array(
-                            'id' => 1,
-                        ),
-                    ),
-                )
-            );
-        }
-
         if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$throw') === 0) {
             return $this->setError('Forced error');
         }
 
-        if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$success') === 0) {
-            return $this->setResult(
-                array(
-                    'status'   => self::STATUS_SUCCESS,
-                    'code'     => 200,
-                    'response' => array(
-                        'data' => array(
-                            'id' => 1,
+        if (!empty($this->_config['tokenCreateContact']) && strpos($this->_config['tokenCreateContact'], 'token$throw') === 0) {
+            return $this->setError('Forced error');
+        }
+
+        if (empty($this->_config['tokenCreateContact'])) {
+            if (empty($this->_config['token']) || strpos($this->_config['token'], 'token$success') === 0) {
+                return $this->setResult(
+                    array(
+                        'status'   => self::STATUS_SUCCESS,
+                        'code'     => 200,
+                        'response' => array(
+                            'data' => array(
+                                'id' => 1,
+                            ),
                         ),
-                    ),
-                )
-            );
+                    )
+                );
+            }
+        } else {
+            if (strpos($this->_config['tokenCreateContact'], 'token$successemptyid') === 0) {
+                return $this->setResult(
+                    array(
+                        'status'   => self::STATUS_SUCCESS,
+                        'code'     => 200,
+                        'response' => array(
+                            'data' => array(
+                                'id' => null,
+                            ),
+                        ),
+                    )
+                );
+            }
+
+            if (strpos($this->_config['tokenCreateContact'], 'token$successemptykey') === 0) {
+                return $this->setResult(
+                    array(
+                        'status'   => self::STATUS_SUCCESS,
+                        'code'     => 200,
+                        'response' => array(
+                            'data' => array(
+                            ),
+                        ),
+                    )
+                );
+            }
+
+            if (strpos($this->_config['tokenCreateContact'], 'token$success') === 0) {
+                return $this->setResult(
+                    array(
+                        'status'   => self::STATUS_SUCCESS,
+                        'code'     => 200,
+                        'response' => array(
+                            'data' => array(
+                                'id' => 1,
+                            ),
+                        ),
+                    )
+                );
+            }
         }
 
         return $this->setResult(

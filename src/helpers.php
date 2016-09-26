@@ -457,6 +457,42 @@ class Api_Odr
     }
 
     /**
+     * Changes autorenew state of domain
+     *
+     * @param string $domainName Domain name to change autorenew state
+     *
+     * @return Api_Odr
+     */
+    public function setDomainAutorenewOff($domainName)
+    {
+        return $this->setAutorenew($domainName, false);
+    }
+
+    /**
+     * Changes autorenew state of domain
+     *
+     * @param string $domainName Domain name to change autorenew state
+     *
+     * @return Api_Odr
+     */
+    public function setDomainAutorenewOn($domainName)
+    {
+        return $this->setAutorenew($domainName, true);
+    }
+
+    /**
+     * Reactivates the deleted domain
+     *
+     * @param string $domainName Domain name to reactivate
+     *
+     * @return Api_Odr
+     */
+    public function reactivateDomain($domainName)
+    {
+        return $this->_execute('/domain/' . $domainName . '/reactivate/', self::METHOD_PUT);
+    }
+
+    /**
      * Request to any custom API URL
      * Works as shorthand for $this->_execute() function
      *

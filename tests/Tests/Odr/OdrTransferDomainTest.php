@@ -3,7 +3,7 @@ namespace Tests\Odr;
 
 use Tests\UnitTestCase;
 
-class OdrRegisterDomainTest extends UnitTestCase
+class OdrTransferDomainTest extends UnitTestCase
 {
     public function testNotLoggedIn()
     {
@@ -39,7 +39,7 @@ class OdrRegisterDomainTest extends UnitTestCase
             'companyname'   => 'C',
         );
 
-        self::assertEquals(array('status' => \Odr_Whmcs::STATUS_ERROR, 'error' => 'Can\'t login, reason - Forced error'), odr_RegisterDomain($data));
+        self::assertEquals(array('status' => \Odr_Whmcs::STATUS_ERROR, 'error' => 'Can\'t login, reason - Forced error'), odr_TransferDomain($data));
     }
 
     public function testError()
@@ -76,7 +76,7 @@ class OdrRegisterDomainTest extends UnitTestCase
             'companyname'   => 'C',
         );
 
-        self::assertEquals(array('error' => 'Following error occurred: Forced error'), odr_RegisterDomain($data));
+        self::assertEquals(array('error' => 'Following error occurred: Forced error'), odr_TransferDomain($data));
     }
 
     public function testException()
@@ -113,7 +113,7 @@ class OdrRegisterDomainTest extends UnitTestCase
             'companyname'   => 'C',
         );
 
-        self::assertEquals(array('error' => 'Following error occurred: ' . $module::MESSAGE_CURL_ERROR_FOUND), odr_RegisterDomain($data));
+        self::assertEquals(array('error' => 'Following error occurred: ' . $module::MESSAGE_CURL_ERROR_FOUND), odr_TransferDomain($data));
     }
 
     public function testSuccess()
@@ -132,7 +132,7 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array(), odr_RegisterDomain($data));
+        self::assertEquals(array(), odr_TransferDomain($data));
     }
 
     public function testSuccessNewContact()
@@ -141,10 +141,9 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $module->setConfig(
             array(
-                'api_key'            => 'public$success',
-                'api_secret'         => 'secret$success',
-                'token'              => 'token$success',
-                'tokenCreateContact' => 'token$success',
+                'api_key'    => 'public$success',
+                'api_secret' => 'secret$success',
+                'token'      => 'token$success',
             )
         );
 
@@ -152,7 +151,7 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array(), odr_RegisterDomain($data));
+        self::assertEquals(array(), odr_TransferDomain($data));
     }
 
     public function testSuccessNewContactFailed()
@@ -172,7 +171,7 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array('error' => 'Following error occurred: Forced error'), odr_RegisterDomain($data));
+        self::assertEquals(array('error' => 'Following error occurred: Forced error'), odr_TransferDomain($data));
     }
 
     public function testSuccessNewContactThrow()
@@ -192,7 +191,7 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array('error' => 'Following error occurred: ' . $module::MESSAGE_CURL_ERROR_FOUND), odr_RegisterDomain($data));
+        self::assertEquals(array('error' => 'Following error occurred: ' . $module::MESSAGE_CURL_ERROR_FOUND), odr_TransferDomain($data));
     }
 
     public function testErrorInvalidAddress()
@@ -204,7 +203,7 @@ class OdrRegisterDomainTest extends UnitTestCase
                 'api_key'            => 'public$success',
                 'api_secret'         => 'secret$success',
                 'token'              => 'token$success',
-                'tokenCreateContact' => 'token$throw',
+                'tokenCreateContact' => 'token$success',
             )
         );
 
@@ -215,7 +214,7 @@ class OdrRegisterDomainTest extends UnitTestCase
         $data['address1']      = 'Test str.';
         $data['adminaddress1'] = 'Test str.';
 
-        self::assertEquals(array('error' => 'Following error occurred: Invalid address'), odr_RegisterDomain($data));
+        self::assertEquals(array('error' => 'Following error occurred: Invalid address'), odr_TransferDomain($data));
     }
 
     public function testErrorEmtpyContactId()
@@ -235,7 +234,7 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array('error' => 'Contact creation was not successful, please either try using different data or contact support'), odr_RegisterDomain($data));
+        self::assertEquals(array('error' => 'Contact creation was not successful, please either try using different data or contact support'), odr_TransferDomain($data));
     }
 
     public function testErrorEmtpyContactIdKey()
@@ -255,10 +254,10 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array('error' => 'Contact creation was not successful, please either try using different data or contact support'), odr_RegisterDomain($data));
+        self::assertEquals(array('error' => 'Contact creation was not successful, please either try using different data or contact support'), odr_TransferDomain($data));
     }
 
-    public function testErrorRegisterThrown()
+    public function testErrorTransferThrown()
     {
         $module = $this->getModule();
 
@@ -267,7 +266,7 @@ class OdrRegisterDomainTest extends UnitTestCase
                 'api_key'             => 'public$success',
                 'api_secret'          => 'secret$success',
                 'token'               => 'token$success',
-                'tokenRegisterDomain' => 'token$thrown',
+                'tokenTransferDomain' => 'token$thrown',
             )
         );
 
@@ -275,10 +274,10 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array('error' => 'Following error occurred: ' . $module::MESSAGE_CURL_ERROR_FOUND), odr_RegisterDomain($data));
+        self::assertEquals(array('error' => 'Following error occurred: ' . $module::MESSAGE_CURL_ERROR_FOUND), odr_TransferDomain($data));
     }
 
-    public function testErrorRegisterError()
+    public function testErrorTransferError()
     {
         $module = $this->getModule();
 
@@ -287,7 +286,7 @@ class OdrRegisterDomainTest extends UnitTestCase
                 'api_key'             => 'public$success',
                 'api_secret'          => 'secret$success',
                 'token'               => 'token$success',
-                'tokenRegisterDomain' => 'token$error',
+                'tokenTransferDomain' => 'token$error',
             )
         );
 
@@ -295,10 +294,10 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array('error' => 'Following error occurred: Forced error'), odr_RegisterDomain($data));
+        self::assertEquals(array('error' => 'Following error occurred: Forced error'), odr_TransferDomain($data));
     }
 
-    public function testSuccessRegisterSuccess()
+    public function testSuccessTransferSuccess()
     {
         $module = $this->getModule();
 
@@ -307,7 +306,7 @@ class OdrRegisterDomainTest extends UnitTestCase
                 'api_key'             => 'public$success',
                 'api_secret'          => 'secret$success',
                 'token'               => 'token$success',
-                'tokenRegisterDomain' => 'token$success',
+                'tokenTransferDomain' => 'token$success',
             )
         );
 
@@ -315,7 +314,7 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array(), odr_RegisterDomain($data));
+        self::assertEquals(array(), odr_TransferDomain($data));
     }
 
     public function getDefaultData()
@@ -338,7 +337,7 @@ class OdrRegisterDomainTest extends UnitTestCase
             'firstname'            => 'Test',
             'lastname'             => 'Testov',
             'companyname'          => 'A',
-            'regtype'              => 'Register',
+            'regtype'              => 'Transfer',
             'regperiod'            => '1',
             'additionalfields'     => [],
             'userid'               => '1',
@@ -404,6 +403,7 @@ class OdrRegisterDomainTest extends UnitTestCase
             'ns3'                  => 'ns3.yourdomain.com',
             'ns4'                  => '',
             'ns5'                  => '',
+            'transfersecret'       => 'AuthCode',
         );
     }
 }

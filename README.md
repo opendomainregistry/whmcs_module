@@ -25,4 +25,4 @@ Support
 -------
 
 If you want to get help right away, please use contact data on the main [Open Domain Registry](https://www.opendomainregistry.net/) page.
-You can also [create issue on Github](https://github.com/opendomainregistry/wefact_module/issues/new), we check those too!
+You can also [create issue on Github](https://github.com/opendomainregistry/whmcs_module/issues/new), we check those too!

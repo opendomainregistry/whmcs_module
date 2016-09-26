@@ -11,11 +11,16 @@
 
     <rule ref="rulesets/codesize.xml/NPathComplexity">
         <properties>
-            <property name="minimum" value="300" />
+            <property name="minimum" value="550" />
         </properties>
     </rule>
 
-    <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity" />
+    <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity">
+        <properties>
+            <property name="maximum" value="100" />
+        </properties>
+    </rule>
+
     <rule ref="rulesets/codesize.xml/ExcessiveClassLength" />
 
     <rule ref="rulesets/codesize.xml/ExcessiveMethodLength">

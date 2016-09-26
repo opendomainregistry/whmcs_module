@@ -674,7 +674,7 @@ class Api_Odr
 
     public function log($message, $prio = 'normal')
     {
-        if (!$this->_logsEnabled === false || empty($this->_config['enable_logs'])) {
+        if ($this->_logsEnabled === false || empty($this->_config['enable_logs'])) {
             return true;
         }
 
@@ -689,7 +689,7 @@ class Api_Odr
 
         $file = str_replace(array_keys($r), array_values($r), $filepath);
 
-        if (!is_writeable($file) || !is_dir(dirname($file))) {
+        if (!is_dir(dirname($file))) {
             $this->_logsEnabled = false;
 
             return true;
@@ -702,6 +702,12 @@ class Api_Odr
 MESSAGE;
 
         error_log($to . "\r\n", 3, $file);
+
+        if (!is_writeable($file)) {
+            $this->_logsEnabled = false;
+
+            return true;
+        }
 
         $this->_logsEnabled = true;
 

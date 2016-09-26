@@ -78,11 +78,11 @@ function odr_getConfigArray()
         'logsPath'       => array(
             'FriendlyName' => 'Debug log file path',
             'Type'         => 'text',
-            'Size'         => 256,
-            'Default'      => __DIR__ . '/log/api' . date('Ymd_H') .'.log',
-            'Description'  => "Pick custom log path."
-                . " If logs are disable, this option will be ignored"
-                . " You can use following replacements: #DAY#, #MONTH#, #YEAR#, #HOUR#",
+            'Size'         => 128,
+            'Default'      => __DIR__ . '/log/api#YEAR##MONTH##DAY#_#HOUR#.log',
+            'Description'  => "Pick custom log file path."
+                . " If logs are disable, this option will be ignored."
+                . " You can use following replacements: <strong>#DAY#</strong>, <strong>#MONTH#</strong>, <strong>#YEAR#</strong>, <strong>#HOUR#</strong>",
         ),
     );
 }
@@ -827,7 +827,7 @@ class Odr_Whmcs
             'api_secret'  => $isTestmode && $params['TestApiSecret'] ? $params['TestApiSecret'] : $params['ApiSecret'],
             'url'         => $isTestmode ? Odr_Whmcs::URL_TEST : Odr_Whmcs::URL_LIVE,
             'enable_logs' => !empty($params['EnableLogs']),
-            'logs_path'   => empty($params['LogsPath']) ? __DIR__ . '/log/odr#YEAR##MONTH##DAY#_#HOUR#.log' : $params['LogsPath'],
+            'logs_path'   => empty($params['LogsPath']) ? __DIR__ . '/log/api#YEAR##MONTH##DAY#_#HOUR#.log' : $params['LogsPath'],
         );
 
         return new Api_Odr($module);

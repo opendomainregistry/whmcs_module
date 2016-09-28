@@ -9,57 +9,12 @@ class GetModuleTest extends UnitTestCase
     {
         $testable = array(
             array(
-                'params' => array(
-                    'ApiKey'        => '1',
-                    'ApiSecret'     => '2',
-                    'TestApiKey'    => 'a',
-                    'TestApiSecret' => 'b',
-                    'Testmode'      => false,
-                ),
-                'expected' => array(
-                    'api_key'     => '1',
-                    'api_secret'  => '2',
-                    'url'         => rtrim(\Odr_Whmcs::URL_LIVE, '/'),
-                ),
-            ),
-
-            array(
-                'params' => array(
-                    'ApiKey'        => '1',
-                    'ApiSecret'     => '2',
-                    'TestApiKey'    => 'a',
-                    'TestApiSecret' => 'b',
-                    'Testmode'      => true,
-                ),
-                'expected' => array(
-                    'api_key'    => 'a',
-                    'api_secret' => 'b',
-                    'url'        => rtrim(\Odr_Whmcs::URL_TEST, '/'),
-                ),
-            ),
-
-            array(
-                'params' => array(
-                    'ApiKey'        => '1',
-                    'ApiSecret'     => '2',
-                    'TestApiKey'    => '',
-                    'TestApiSecret' => '',
-                    'Testmode'      => true,
-                ),
-                'expected' => array(
-                    'api_key'    => '1',
-                    'api_secret' => '2',
-                    'url'        => rtrim(\Odr_Whmcs::URL_TEST, '/'),
-                ),
-            ),
-
-            array(
-                'params' => array(
-                    'ApiKey'        => '1',
-                    'ApiSecret'     => '2',
-                    'TestApiKey'    => 'a',
-                    'TestApiSecret' => 'b',
-                    'Testmode'      => 0,
+                'params'   => array(
+                    'OdrApiKey'        => '1',
+                    'OdrApiSecret'     => '2',
+                    'OdrTestApiKey'    => 'a',
+                    'OdrTestApiSecret' => 'b',
+                    'OdrTestmode'      => false,
                 ),
                 'expected' => array(
                     'api_key'    => '1',
@@ -69,12 +24,12 @@ class GetModuleTest extends UnitTestCase
             ),
 
             array(
-                'params' => array(
-                    'ApiKey'        => '1',
-                    'ApiSecret'     => '2',
-                    'TestApiKey'    => 'a',
-                    'TestApiSecret' => 'b',
-                    'Testmode'      => 1,
+                'params'   => array(
+                    'OdrApiKey'        => '1',
+                    'OdrApiSecret'     => '2',
+                    'OdrTestApiKey'    => 'a',
+                    'OdrTestApiSecret' => 'b',
+                    'OdrTestmode'      => true,
                 ),
                 'expected' => array(
                     'api_key'    => 'a',
@@ -84,12 +39,12 @@ class GetModuleTest extends UnitTestCase
             ),
 
             array(
-                'params' => array(
-                    'ApiKey'        => '1',
-                    'ApiSecret'     => '2',
-                    'TestApiKey'    => '',
-                    'TestApiSecret' => '',
-                    'Testmode'      => 1,
+                'params'   => array(
+                    'OdrApiKey'        => '1',
+                    'OdrApiSecret'     => '2',
+                    'OdrTestApiKey'    => '',
+                    'OdrTestApiSecret' => '',
+                    'OdrTestmode'      => true,
                 ),
                 'expected' => array(
                     'api_key'    => '1',
@@ -99,12 +54,12 @@ class GetModuleTest extends UnitTestCase
             ),
 
             array(
-                'params' => array(
-                    'ApiKey'        => '1',
-                    'ApiSecret'     => '2',
-                    'TestApiKey'    => 'a',
-                    'TestApiSecret' => 'b',
-                    'Testmode'      => '0',
+                'params'   => array(
+                    'OdrApiKey'        => '1',
+                    'OdrApiSecret'     => '2',
+                    'OdrTestApiKey'    => 'a',
+                    'OdrTestApiSecret' => 'b',
+                    'OdrTestmode'      => 0,
                 ),
                 'expected' => array(
                     'api_key'    => '1',
@@ -114,12 +69,12 @@ class GetModuleTest extends UnitTestCase
             ),
 
             array(
-                'params' => array(
-                    'ApiKey'        => '1',
-                    'ApiSecret'     => '2',
-                    'TestApiKey'    => 'a',
-                    'TestApiSecret' => 'b',
-                    'Testmode'      => '1',
+                'params'   => array(
+                    'OdrApiKey'        => '1',
+                    'OdrApiSecret'     => '2',
+                    'OdrTestApiKey'    => 'a',
+                    'OdrTestApiSecret' => 'b',
+                    'OdrTestmode'      => 1,
                 ),
                 'expected' => array(
                     'api_key'    => 'a',
@@ -129,12 +84,57 @@ class GetModuleTest extends UnitTestCase
             ),
 
             array(
-                'params' => array(
-                    'ApiKey'        => '1',
-                    'ApiSecret'     => '2',
-                    'TestApiKey'    => '',
-                    'TestApiSecret' => '',
-                    'Testmode'      => '1',
+                'params'   => array(
+                    'OdrApiKey'        => '1',
+                    'OdrApiSecret'     => '2',
+                    'OdrTestApiKey'    => '',
+                    'OdrTestApiSecret' => '',
+                    'OdrTestmode'      => 1,
+                ),
+                'expected' => array(
+                    'api_key'    => '1',
+                    'api_secret' => '2',
+                    'url'        => rtrim(\Odr_Whmcs::URL_TEST, '/'),
+                ),
+            ),
+
+            array(
+                'params'   => array(
+                    'OdrApiKey'        => '1',
+                    'OdrApiSecret'     => '2',
+                    'OdrTestApiKey'    => 'a',
+                    'OdrTestApiSecret' => 'b',
+                    'OdrTestmode'      => '0',
+                ),
+                'expected' => array(
+                    'api_key'    => '1',
+                    'api_secret' => '2',
+                    'url'        => rtrim(\Odr_Whmcs::URL_LIVE, '/'),
+                ),
+            ),
+
+            array(
+                'params'   => array(
+                    'OdrApiKey'        => '1',
+                    'OdrApiSecret'     => '2',
+                    'OdrTestApiKey'    => 'a',
+                    'OdrTestApiSecret' => 'b',
+                    'OdrTestmode'      => '1',
+                ),
+                'expected' => array(
+                    'api_key'    => 'a',
+                    'api_secret' => 'b',
+                    'url'        => rtrim(\Odr_Whmcs::URL_TEST, '/'),
+                ),
+            ),
+
+            array(
+                'params'   => array(
+                    'OdrApiKey'        => '1',
+                    'OdrApiSecret'     => '2',
+                    'OdrTestApiKey'    => '',
+                    'OdrTestApiSecret' => '',
+                    'OdrTestmode'      => '1',
                 ),
                 'expected' => array(
                     'api_key'    => '1',

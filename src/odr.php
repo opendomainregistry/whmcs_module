@@ -20,69 +20,73 @@ function odr_getConfigArray()
 
         'Description' => array(
             'Type'  => 'System',
-            'Value' => 'Register, update and transfer domains, supported over 480 TLD, buy and renew SSL certificates, reseller support and many more. Visit <a href="' . $liveHost . '">' . $liveHost . '</a> for more details',
+            'Value' => 'Register, update and transfer domains, supported over 480 TLD, buy and renew SSL certificates, reseller support and many more. Visit <a href="' . $liveHost . '">' . $liveHost . '</a> for more details<br>'
+                . 'For support, please <a href="https://github.com/opendomainregistry/whmcs_module/issues/new" target="_blank">create issue</a> at <a href="https://github.com/opendomainregistry/whmcs_module" target="_blank">Github</a>.',
         ),
 
-        'ApiKey'         => array(
+        'OdrApiKey'         => array(
             'FriendlyName' => 'API Key',
             'Type'         => 'text',
             'Size'         => '50',
             'Required'     => true,
-            'Description'  => "Enter your API key here."
-                . " To find your API key, login to Open Domain Registry ({$liveHost}) and click on 'API Keys'/'API sleutel' in the main menu."
-                . " In case you want to generate new API keys or change current ones, just click on 'Renew API keys'.",
+            'Description'  => 'Enter your API key here.<br>'
+                . 'To find your API key, login to Open Domain Registry (' . $liveHost . ') and click on "API Keys"/"API sleutel" in the main menu.<br>'
+                . 'In case you want to generate new API keys or change current ones, just click on "Renew API keys".',
         ),
 
-        'ApiSecret'      => array(
+        'OdrApiSecret'      => array(
             'FriendlyName' => 'API Secret',
             'Type'         => 'password',
             'Size'         => '50',
             'Required'     => true,
-            'Description'  => "Enter your API secret here."
-                . " To find your API secret, login to Open Domain Registry ({$liveHost}) and click on 'API Keys'/'API sleutel' in the main menu."
-                . " In case you want to generate new API keys or change current ones, just click on 'Renew API keys'.",
+            'Description'  => 'Enter your API secret here.<br>'
+                . 'To find your API secret, login to Open Domain Registry (' . $liveHost . ') and click on "API Keys"/"API sleutel" in the main menu.<br>'
+                . 'In case you want to generate new API keys or change current ones, just click on "Renew API keys".',
         ),
 
-        'TestApiKey'         => array(
+        'OdrTestApiKey'         => array(
             'FriendlyName' => 'API Key for Testmode',
             'Type'         => 'text',
             'Size'         => '50',
-            'Description'  => "Enter your API key for Testmode here."
-                . " To find your API key, login to Open Domain Registry Staging Environment ({$testHost}) and click on 'API Keys'/'API sleutel' in the main menu."
-                . " In case you want to generate new API keys or change current ones, just click on 'Renew API keys'.",
+            'Description'  => 'Enter your API key for Testmode here.<br>'
+                . 'To find your API key, login to Open Domain Registry Staging Environment (' . $testHost . ') and click on "API Keys"/"API sleutel" in the main menu.<br>'
+                . 'In case you want to generate new API keys or change current ones, just click on "Renew API keys".',
         ),
 
-        'TestApiSecret'      => array(
+        'OdrTestApiSecret'      => array(
             'FriendlyName' => 'API Secret for Testmode',
             'Type'         => 'password',
             'Size'         => '50',
-            'Description'  => "Enter your API secret for Testmode here."
-                . " To find your API secret, login to Open Domain Registry Staging Environment ({$testHost}) and click on 'API Keys'/'API sleutel' in the main menu."
-                . " In case you want to generate new API keys or change current ones, just click on 'Renew API keys'.",
+            'Description'  => 'Enter your API secret for Testmode here.<br>'
+                . 'To find your API secret, login to Open Domain Registry Staging Environment (' . $testHost . ') and click on "API Keys"/"API sleutel" in the main menu.<br>'
+                . 'In case you want to generate new API keys or change current ones, just click on "Renew API keys".',
         ),
 
-        'Testmode'       => array(
+        'OdrTestmode'       => array(
             'FriendlyName' => 'Test Mode',
             'Type'         => 'yesno',
+            'Description'  => 'Enable Test Mode or not.<br>'
+                . 'Warning! When Test Mode enabled, requests will be sent to a different URL (' . $testHost . ') and different API keys will be used. Be sure you\'re registered there and user have generated API keys',
             'Default'      => false,
         ),
 
-        'EnableLogs'       => array(
+        'OdrEnableLogs'       => array(
             'FriendlyName' => 'Enable testing logs',
             'Type'         => 'yesno',
             'Default'      => false,
-            'Description'  => "Enables log writing for debugging purposes."
-                . " Before enabling, please, be sure to create '/log/' folder (or value from 'logsPath') and set write permissions for it.",
+            'Description'  => 'Enables log writing for debugging purposes.<br>'
+                . 'Before enabling, please, be sure to create "/log/" folder (or value from "OdrLogsPath") and set write permissions for it.<br>'
+                . 'If you encounter any issue, we ask you to send us latest logs, that way we can find and fix the issue much easier.',
         ),
 
-        'logsPath'       => array(
+        'OdrLogsPath'       => array(
             'FriendlyName' => 'Debug log file path',
             'Type'         => 'text',
-            'Size'         => 128,
+            'Size'         => '120',
             'Default'      => __DIR__ . '/log/api#YEAR##MONTH##DAY#_#HOUR#.log',
-            'Description'  => "Pick custom log file path."
-                . " If logs are disable, this option will be ignored."
-                . " You can use following replacements: <strong>#DAY#</strong>, <strong>#MONTH#</strong>, <strong>#YEAR#</strong>, <strong>#HOUR#</strong>",
+            'Description'  => 'Pick custom log file path.<br>'
+                . 'If logs are disable, this option will be ignored.<br>'
+                . 'You can use following replacements: <strong>#DAY#</strong>, <strong>#MONTH#</strong>, <strong>#YEAR#</strong>, <strong>#HOUR#</strong>',
         ),
     );
 }
@@ -818,16 +822,16 @@ class Odr_Whmcs
 
         $isTestmode = false;
 
-        if (!empty($params['Testmode'])) {
+        if (!empty($params['OdrTestmode'])) {
             $isTestmode = true;
         }
 
         $module = array(
-            'api_key'     => $isTestmode && $params['TestApiKey']    ? $params['TestApiKey']    : $params['ApiKey'],
-            'api_secret'  => $isTestmode && $params['TestApiSecret'] ? $params['TestApiSecret'] : $params['ApiSecret'],
+            'api_key'     => $isTestmode && $params['OdrTestApiKey']    ? $params['OdrTestApiKey']    : $params['OdrApiKey'],
+            'api_secret'  => $isTestmode && $params['OdrTestApiSecret'] ? $params['OdrTestApiSecret'] : $params['OdrApiSecret'],
             'url'         => $isTestmode ? Odr_Whmcs::URL_TEST : Odr_Whmcs::URL_LIVE,
-            'enable_logs' => !empty($params['EnableLogs']),
-            'logs_path'   => empty($params['LogsPath']) ? __DIR__ . '/log/api#YEAR##MONTH##DAY#_#HOUR#.log' : $params['LogsPath'],
+            'enable_logs' => !empty($params['OdrEnableLogs']),
+            'logs_path'   => empty($params['OdrLogsPath']) ? __DIR__ . '/log/api#YEAR##MONTH##DAY#_#HOUR#.log' : $params['OdrLogsPath'],
         );
 
         return new Api_Odr($module);

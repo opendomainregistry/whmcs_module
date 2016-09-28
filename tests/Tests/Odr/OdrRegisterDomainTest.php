@@ -18,25 +18,24 @@ class OdrRegisterDomainTest extends UnitTestCase
         );
 
         \Odr_Whmcs::$module = $module;
-        
+
         $data = array(
-            'whmcsVersion'  => '6.3.1',
-            'Username'      => '',
-            'ApiKey'        => 'public$live',
-            'ApiSecret'     => 'secret$live',
-            'TestApiKey'    => 'public$test',
-            'TestApiSecret' => 'secret$test',
-            'Testmode'      => 'on',
-            'Primarydomain' => '',
-            'domainObj'     => array(),
-            'domainid'      => '1',
-            'domainname'    => 'test.nl',
-            'sld'           => 'test',
-            'tld'           => 'nl',
-            'registrar'     => 'odr',
-            'firstname'     => 'A',
-            'lastname'      => 'B',
-            'companyname'   => 'C',
+            'whmcsVersion'     => '6.3.1',
+            'Username'         => '',
+            'OdrApiKey'        => 'public$live',
+            'OdrApiSecret'     => 'secret$live',
+            'OdrTestApiKey'    => 'public$test',
+            'OdrTestApiSecret' => 'secret$test',
+            'OdrTestmode'      => 'on',
+            'domainObj'        => array(),
+            'domainid'         => '1',
+            'domainname'       => 'test.nl',
+            'sld'              => 'test',
+            'tld'              => 'nl',
+            'registrar'        => 'odr',
+            'firstname'        => 'A',
+            'lastname'         => 'B',
+            'companyname'      => 'C',
         );
 
         self::assertEquals(array('status' => \Odr_Whmcs::STATUS_ERROR, 'error' => 'Can\'t login, reason - Forced error'), odr_RegisterDomain($data));
@@ -57,23 +56,22 @@ class OdrRegisterDomainTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'  => '6.3.1',
-            'Username'      => '',
-            'ApiKey'        => 'public$live',
-            'ApiSecret'     => 'secret$live',
-            'TestApiKey'    => 'public$test',
-            'TestApiSecret' => 'secret$test',
-            'Testmode'      => 'on',
-            'Primarydomain' => '',
-            'domainObj'     => array(),
-            'domainid'      => '1',
-            'domainname'    => 'test.nl',
-            'sld'           => 'test',
-            'tld'           => 'nl',
-            'registrar'     => 'odr',
-            'firstname'     => 'A',
-            'lastname'      => 'B',
-            'companyname'   => 'C',
+            'whmcsVersion'     => '6.3.1',
+            'Username'         => '',
+            'OdrApiKey'        => 'public$live',
+            'OdrApiSecret'     => 'secret$live',
+            'OdrTestApiKey'    => 'public$test',
+            'OdrTestApiSecret' => 'secret$test',
+            'OdrTestmode'      => 'on',
+            'domainObj'        => array(),
+            'domainid'         => '1',
+            'domainname'       => 'test.nl',
+            'sld'              => 'test',
+            'tld'              => 'nl',
+            'registrar'        => 'odr',
+            'firstname'        => 'A',
+            'lastname'         => 'B',
+            'companyname'      => 'C',
         );
 
         self::assertEquals(array('error' => 'Following error occurred: Forced error'), odr_RegisterDomain($data));
@@ -94,23 +92,22 @@ class OdrRegisterDomainTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'  => '6.3.1',
-            'Username'      => '',
-            'ApiKey'        => 'public$live',
-            'ApiSecret'     => 'secret$live',
-            'TestApiKey'    => 'public$test',
-            'TestApiSecret' => 'secret$test',
-            'Testmode'      => 'on',
-            'Primarydomain' => '',
-            'domainObj'     => array(),
-            'domainid'      => '1',
-            'domainname'    => 'test.nl',
-            'sld'           => 'test',
-            'tld'           => 'nl',
-            'registrar'     => 'odr',
-            'firstname'     => 'A',
-            'lastname'      => 'B',
-            'companyname'   => 'C',
+            'whmcsVersion'     => '6.3.1',
+            'Username'         => '',
+            'OdrApiKey'        => 'public$live',
+            'OdrApiSecret'     => 'secret$live',
+            'OdrTestApiKey'    => 'public$test',
+            'OdrTestApiSecret' => 'secret$test',
+            'OdrTestmode'      => 'on',
+            'domainObj'        => array(),
+            'domainid'         => '1',
+            'domainname'       => 'test.nl',
+            'sld'              => 'test',
+            'tld'              => 'nl',
+            'registrar'        => 'odr',
+            'firstname'        => 'A',
+            'lastname'         => 'B',
+            'companyname'      => 'C',
         );
 
         self::assertEquals(array('error' => 'Following error occurred: ' . $module::MESSAGE_CURL_ERROR_FOUND), odr_RegisterDomain($data));
@@ -212,7 +209,7 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        $data['address1']      = 'Test str.';
+        $data['address1'] = 'Test str.';
         $data['adminaddress1'] = 'Test str.';
 
         self::assertEquals(array('error' => 'Following error occurred: Invalid address'), odr_RegisterDomain($data));
@@ -323,12 +320,11 @@ class OdrRegisterDomainTest extends UnitTestCase
         return array(
             'whmcsVersion'         => '6.3.1',
             'Username'             => '',
-            'ApiKey'               => 'public$live',
-            'ApiSecret'            => 'secret$live',
-            'TestApiKey'           => 'public$test',
-            'TestApiSecret'        => 'secret$test',
-            'Testmode'             => 'on',
-            'Primarydomain'        => '',
+            'OdrApiKey'            => 'public$live',
+            'OdrApiSecret'         => 'secret$live',
+            'OdrTestApiKey'        => 'public$test',
+            'OdrTestApiSecret'     => 'secret$test',
+            'OdrTestmode'          => 'on',
             'domainObj'            => array(),
             'domainid'             => '1',
             'domainname'           => 'test.nl',

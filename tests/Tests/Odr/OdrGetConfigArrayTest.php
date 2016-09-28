@@ -12,11 +12,11 @@ class OdrGetConfigArrayTest extends UnitTestCase
         $required = array(
             'FriendlyName',
             'Description',
-            'ApiKey',
-            'ApiSecret',
-            'TestApiKey',
-            'TestApiSecret',
-            'Testmode',
+            'OdrApiKey',
+            'OdrApiSecret',
+            'OdrTestApiKey',
+            'OdrTestApiSecret',
+            'OdrTestmode',
         );
 
         foreach ($required as $r) {

@@ -694,7 +694,7 @@ class Odr_Whmcs
     const STATUS_SUCCESS = 'success';
     const STATUS_ERROR   = 'error';
 
-    const URL_TEST = 'http://apiodr.kaa.tomoko.rosapp.ru';
+    const URL_TEST = 'http://api.odrregistry.nl';
     const URL_LIVE = Api_Odr::URL;
 
     const MODULE = 'odr';

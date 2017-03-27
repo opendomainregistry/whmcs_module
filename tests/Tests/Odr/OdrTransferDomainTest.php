@@ -18,9 +18,9 @@ class OdrTransferDomainTest extends UnitTestCase
         );
 
         \Odr_Whmcs::$module = $module;
-        
+
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -56,7 +56,7 @@ class OdrTransferDomainTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -92,7 +92,7 @@ class OdrTransferDomainTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -129,7 +129,7 @@ class OdrTransferDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array(), odr_TransferDomain($data));
+        self::assertEquals(array('success' => true), odr_TransferDomain($data));
     }
 
     public function testSuccessNewContact()
@@ -148,7 +148,7 @@ class OdrTransferDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array(), odr_TransferDomain($data));
+        self::assertEquals(array('success' => true), odr_TransferDomain($data));
     }
 
     public function testSuccessNewContactFailed()
@@ -208,7 +208,7 @@ class OdrTransferDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        $data['address1']      = 'Test str.';
+        $data['address1'] = 'Test str.';
         $data['adminaddress1'] = 'Test str.';
 
         self::assertEquals(array('error' => 'Following error occurred: Invalid address'), odr_TransferDomain($data));
@@ -311,13 +311,13 @@ class OdrTransferDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array(), odr_TransferDomain($data));
+        self::assertEquals(array('success' => true), odr_TransferDomain($data));
     }
 
     public function getDefaultData()
     {
         return array(
-            'whmcsVersion'         => '6.3.1',
+            'whmcsVersion'         => self::WHMCS_VERSION,
             'Username'             => '',
             'OdrApiKey'            => 'public$live',
             'OdrApiSecret'         => 'secret$live',

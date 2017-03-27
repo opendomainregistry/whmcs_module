@@ -1,11 +1,11 @@
 <?php
 set_include_path(realpath(__DIR__) .'/../' . PATH_SEPARATOR . get_include_path());
 
-require_once 'vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once 'src/3rdparty/functions.php';
-require_once 'src/helpers.php';
-require_once 'src/odr.php';
+require_once __DIR__ . '/../src/3rdparty/functions.php';
+require_once __DIR__ . '/../src/helpers.php';
+require_once __DIR__ . '/../src/odr.php';
 
 ini_set('memory_limit', '256M');
 set_time_limit(20);

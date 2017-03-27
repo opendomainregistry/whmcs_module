@@ -27,3 +27,11 @@ if (!function_exists('logModuleCall')) {
     {
     }
 }
+
+if (!class_exists('WHMCS\Domains\DomainLookup\ResultsList')) {
+    require_once __DIR__ . '/f_resultslist.php';
+}
+
+if (!class_exists('WHMCS\Domains\DomainLookup\SearchResult')) {
+    require_once __DIR__ . '/f_searchresult.php';
+}

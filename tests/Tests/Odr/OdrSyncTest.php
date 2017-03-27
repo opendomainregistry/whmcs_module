@@ -20,7 +20,7 @@ class OdrSyncTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -56,7 +56,7 @@ class OdrSyncTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -92,7 +92,7 @@ class OdrSyncTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -128,7 +128,7 @@ class OdrSyncTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -164,7 +164,7 @@ class OdrSyncTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -200,7 +200,7 @@ class OdrSyncTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -241,7 +241,7 @@ class OdrSyncTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -282,7 +282,7 @@ class OdrSyncTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -323,7 +323,7 @@ class OdrSyncTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -364,7 +364,7 @@ class OdrSyncTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -405,7 +405,7 @@ class OdrSyncTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',

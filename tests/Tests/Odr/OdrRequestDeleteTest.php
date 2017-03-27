@@ -18,24 +18,24 @@ class OdrRequestDeleteTest extends UnitTestCase
         );
 
         \Odr_Whmcs::$module = $module;
-        
+
         $data = array(
-            'whmcsVersion'  => '6.3.1',
-            'Username'      => '',
+            'whmcsVersion'     => self::WHMCS_VERSION,
+            'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
             'OdrTestApiKey'    => 'public$test',
             'OdrTestApiSecret' => 'secret$test',
             'OdrTestmode'      => 'on',
-            'domainObj'     => array(),
-            'domainid'      => '1',
-            'domainname'    => 'test.nl',
-            'sld'           => 'test',
-            'tld'           => 'nl',
-            'registrar'     => 'odr',
-            'firstname'     => 'A',
-            'lastname'      => 'B',
-            'companyname'   => 'C',
+            'domainObj'        => array(),
+            'domainid'         => '1',
+            'domainname'       => 'test.nl',
+            'sld'              => 'test',
+            'tld'              => 'nl',
+            'registrar'        => 'odr',
+            'firstname'        => 'A',
+            'lastname'         => 'B',
+            'companyname'      => 'C',
         );
 
         self::assertEquals(array('status' => \Odr_Whmcs::STATUS_ERROR, 'error' => 'Can\'t login, reason - Forced error'), odr_RequestDelete($data));
@@ -56,22 +56,22 @@ class OdrRequestDeleteTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'  => '6.3.1',
-            'Username'      => '',
+            'whmcsVersion'     => self::WHMCS_VERSION,
+            'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
             'OdrTestApiKey'    => 'public$test',
             'OdrTestApiSecret' => 'secret$test',
             'OdrTestmode'      => 'on',
-            'domainObj'     => array(),
-            'domainid'      => '1',
-            'domainname'    => 'test.nl',
-            'sld'           => 'test',
-            'tld'           => 'nl',
-            'registrar'     => 'odr',
-            'firstname'     => 'A',
-            'lastname'      => 'B',
-            'companyname'   => 'C',
+            'domainObj'        => array(),
+            'domainid'         => '1',
+            'domainname'       => 'test.nl',
+            'sld'              => 'test',
+            'tld'              => 'nl',
+            'registrar'        => 'odr',
+            'firstname'        => 'A',
+            'lastname'         => 'B',
+            'companyname'      => 'C',
         );
 
         self::assertEquals(array('error' => 'Following error occurred: Forced error'), odr_RequestDelete($data));
@@ -92,22 +92,22 @@ class OdrRequestDeleteTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'  => '6.3.1',
-            'Username'      => '',
+            'whmcsVersion'     => self::WHMCS_VERSION,
+            'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
             'OdrTestApiKey'    => 'public$test',
             'OdrTestApiSecret' => 'secret$test',
             'OdrTestmode'      => 'on',
-            'domainObj'     => array(),
-            'domainid'      => '1',
-            'domainname'    => 'test.nl',
-            'sld'           => 'test',
-            'tld'           => 'nl',
-            'registrar'     => 'odr',
-            'firstname'     => 'A',
-            'lastname'      => 'B',
-            'companyname'   => 'C',
+            'domainObj'        => array(),
+            'domainid'         => '1',
+            'domainname'       => 'test.nl',
+            'sld'              => 'test',
+            'tld'              => 'nl',
+            'registrar'        => 'odr',
+            'firstname'        => 'A',
+            'lastname'         => 'B',
+            'companyname'      => 'C',
         );
 
         self::assertEquals(array('error' => 'Following error occurred: ' . $module::MESSAGE_CURL_ERROR_FOUND), odr_RequestDelete($data));
@@ -128,22 +128,22 @@ class OdrRequestDeleteTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'  => '6.3.1',
-            'Username'      => '',
+            'whmcsVersion'     => self::WHMCS_VERSION,
+            'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
             'OdrTestApiKey'    => 'public$test',
             'OdrTestApiSecret' => 'secret$test',
             'OdrTestmode'      => 'on',
-            'domainObj'     => array(),
-            'domainid'      => '1',
-            'domainname'    => 'test.nl',
-            'sld'           => 'test',
-            'tld'           => 'nl',
-            'registrar'     => 'odr',
-            'firstname'     => 'A',
-            'lastname'      => 'B',
-            'companyname'   => 'C',
+            'domainObj'        => array(),
+            'domainid'         => '1',
+            'domainname'       => 'test.nl',
+            'sld'              => 'test',
+            'tld'              => 'nl',
+            'registrar'        => 'odr',
+            'firstname'        => 'A',
+            'lastname'         => 'B',
+            'companyname'      => 'C',
         );
 
         self::assertEquals(array('error' => 'Domain deletion already scheduled'), odr_RequestDelete($data));
@@ -164,22 +164,22 @@ class OdrRequestDeleteTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'  => '6.3.1',
-            'Username'      => '',
+            'whmcsVersion'     => self::WHMCS_VERSION,
+            'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
             'OdrTestApiKey'    => 'public$test',
             'OdrTestApiSecret' => 'secret$test',
             'OdrTestmode'      => 'on',
-            'domainObj'     => array(),
-            'domainid'      => '1',
-            'domainname'    => 'test.nl',
-            'sld'           => 'test',
-            'tld'           => 'nl',
-            'registrar'     => 'odr',
-            'firstname'     => 'A',
-            'lastname'      => 'B',
-            'companyname'   => 'C',
+            'domainObj'        => array(),
+            'domainid'         => '1',
+            'domainname'       => 'test.nl',
+            'sld'              => 'test',
+            'tld'              => 'nl',
+            'registrar'        => 'odr',
+            'firstname'        => 'A',
+            'lastname'         => 'B',
+            'companyname'      => 'C',
         );
 
         self::assertEquals(array('domainid' => '1', 'status' => 'Cancelled'), odr_RequestDelete($data));

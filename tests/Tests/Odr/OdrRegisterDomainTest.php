@@ -20,7 +20,7 @@ class OdrRegisterDomainTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -56,7 +56,7 @@ class OdrRegisterDomainTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -92,7 +92,7 @@ class OdrRegisterDomainTest extends UnitTestCase
         \Odr_Whmcs::$module = $module;
 
         $data = array(
-            'whmcsVersion'     => '6.3.1',
+            'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
             'OdrApiSecret'     => 'secret$live',
@@ -129,7 +129,7 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array(), odr_RegisterDomain($data));
+        self::assertEquals(array('success' => true), odr_RegisterDomain($data));
     }
 
     public function testSuccessNewContact()
@@ -149,7 +149,7 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array(), odr_RegisterDomain($data));
+        self::assertEquals(array('success' => true), odr_RegisterDomain($data));
     }
 
     public function testSuccessNewContactFailed()
@@ -312,13 +312,13 @@ class OdrRegisterDomainTest extends UnitTestCase
 
         $data = $this->getDefaultData();
 
-        self::assertEquals(array(), odr_RegisterDomain($data));
+        self::assertEquals(array('success' => true), odr_RegisterDomain($data));
     }
 
     public function getDefaultData()
     {
         return array(
-            'whmcsVersion'         => '6.3.1',
+            'whmcsVersion'         => self::WHMCS_VERSION,
             'Username'             => '',
             'OdrApiKey'            => 'public$live',
             'OdrApiSecret'         => 'secret$live',

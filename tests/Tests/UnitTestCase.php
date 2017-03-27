@@ -5,6 +5,8 @@ use Mocks;
 
 abstract class UnitTestCase extends \PHPUnit_Framework_TestCase
 {
+    const WHMCS_VERSION = '7.1.2';
+
     /**
      * @var bool
      *
@@ -48,6 +50,8 @@ abstract class UnitTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
+        \Odr_Whmcs::$module = null;
+
         parent::tearDown();
     }
 

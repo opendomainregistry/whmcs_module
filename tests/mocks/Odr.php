@@ -566,6 +566,88 @@ class Odr extends \Api_Odr
             );
         }
 
+        if (!empty($this->_config['tokenGetContact']) && strpos($this->_config['tokenGetContact'], 'token$error') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_ERROR,
+                    'code'     => 404,
+                    'response' => array(
+                        'id'                      => $handle,
+                        'first_name'              => 'Test',
+                        'middle_name'             => 'Testovich',
+                        'last_name'               => 'Testov',
+                        'full_name'               => 'T Testov',
+                        'initials'                => 'T',
+                        'state'                   => 'Test State',
+                        'city'                    => 'Test City',
+                        'postal_code'             => '1900AB',
+                        'phone'                   => '+555.1234561122',
+                        'fax'                     => null,
+                        'email'                   => 'test@gooblesupermegacomp.com',
+                        'country'                 => 'RU',
+                        'language'                => 'NL',
+                        'gender'                  => 'MALE',
+                        'address'                 => 'Street of 1000 tests, 1000',
+                        'street'                  => 'Street of 1000 tests',
+                        'house_number'            => 1000,
+                        'company_name'            => 'T Testov',
+                        'company_email'           => 'test@gooblesupermegacomp.com',
+                        'company_address'         => 'Last Test str, 122',
+                        'company_street'          => 'Last Test str',
+                        'company_house_number'    => 122,
+                        'company_postal_code'     => '4321AB',
+                        'company_city'            => 'Test City',
+                        'company_phone'           => '+1.1234567890',
+                        'company_vatin'           => '123ABC',
+                        'organization_legal_form' => 'PERSOON',
+                        'created'                 => '2016-02-02 10:07;52',
+                        'updated'                 => '2016-02-02 10:07:52'
+                    ),
+                )
+            );
+        }
+
+        if (!empty($this->_config['tokenGetContact']) && strpos($this->_config['tokenGetContact'], 'token$success') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'id'                      => $handle,
+                        'first_name'              => 'Test',
+                        'middle_name'             => 'Testovich',
+                        'last_name'               => 'Testov',
+                        'full_name'               => 'T Testov',
+                        'initials'                => 'T',
+                        'state'                   => 'Test State',
+                        'city'                    => 'Test City',
+                        'postal_code'             => '1900AB',
+                        'phone'                   => '+555.1234561122',
+                        'fax'                     => null,
+                        'email'                   => 'test@gooblesupermegacomp.com',
+                        'country'                 => 'RU',
+                        'language'                => 'NL',
+                        'gender'                  => 'MALE',
+                        'address'                 => 'Street of 1000 tests, 1000',
+                        'street'                  => 'Street of 1000 tests',
+                        'house_number'            => 1000,
+                        'company_name'            => 'T Testov',
+                        'company_email'           => 'test@gooblesupermegacomp.com',
+                        'company_address'         => 'Last Test str, 122',
+                        'company_street'          => 'Last Test str',
+                        'company_house_number'    => 122,
+                        'company_postal_code'     => '4321AB',
+                        'company_city'            => 'Test City',
+                        'company_phone'           => '+1.1234567890',
+                        'company_vatin'           => '123ABC',
+                        'organization_legal_form' => 'PERSOON',
+                        'created'                 => '2016-02-02 10:07;52',
+                        'updated'                 => '2016-02-02 10:07:52'
+                    ),
+                )
+            );
+        }
+
         return $this->setResult(
             array(
                 'status'   => self::STATUS_ERROR,
@@ -782,7 +864,8 @@ class Odr extends \Api_Odr
                         'status'   => self::STATUS_SUCCESS,
                         'code'     => 200,
                         'response' => array(
-                            'data' => array(
+                            'status' => 'COMPLETED',
+                            'data'   => array(
                                 'domain_name'        => 'test',
                                 'period'             => 12,
                                 'contact_registrant' => 5,
@@ -809,7 +892,8 @@ class Odr extends \Api_Odr
                         'status'   => self::STATUS_SUCCESS,
                         'code'     => 200,
                         'response' => array(
-                            'data' => array(
+                            'status' => 'COMPLETED',
+                            'data'   => array(
                                 'domain_name'        => 'test',
                                 'period'             => 12,
                                 'contact_registrant' => 5,
@@ -860,7 +944,8 @@ class Odr extends \Api_Odr
                         'status'   => self::STATUS_SUCCESS,
                         'code'     => 200,
                         'response' => array(
-                            'result' => true,
+                            'success' => 'COMPLETED',
+                            'result'  => true,
                         ),
                     )
                 );
@@ -872,7 +957,8 @@ class Odr extends \Api_Odr
                         'status'   => self::STATUS_SUCCESS,
                         'code'     => 200,
                         'response' => array(
-                            'result' => true,
+                            'success' => 'COMPLETED',
+                            'result'  => true,
                         ),
                     )
                 );
@@ -908,7 +994,8 @@ class Odr extends \Api_Odr
                         'status'   => self::STATUS_SUCCESS,
                         'code'     => 200,
                         'response' => array(
-                            'data' => array(
+                            'status' => 'COMPLETED',
+                            'data'   => array(
                                 'domain_name'        => 'test',
                                 'period'             => 12,
                                 'contact_registrant' => 5,
@@ -935,7 +1022,8 @@ class Odr extends \Api_Odr
                         'status'   => self::STATUS_SUCCESS,
                         'code'     => 200,
                         'response' => array(
-                            'data' => array(
+                            'status' => 'COMPLETED',
+                            'data'   => array(
                                 'domain_name'        => 'test',
                                 'period'             => 12,
                                 'contact_registrant' => 5,
@@ -1027,7 +1115,8 @@ class Odr extends \Api_Odr
                         'status'   => self::STATUS_SUCCESS,
                         'code'     => 200,
                         'response' => array(
-                            'data' => array(
+                            'status' => 'COMPLETED',
+                            'data'   => array(
                                 'id' => 1,
                             ),
                         ),

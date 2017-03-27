@@ -3,7 +3,10 @@ namespace Tests\Odr;
 
 use Tests\UnitTestCase;
 
-class OdrGetNameserversTest extends UnitTestCase
+use WHMCS\Domains\DomainLookup\ResultsList;
+use WHMCS\Domains\DomainLookup\SearchResult;
+
+class OdrCheckAvailabilityTest extends UnitTestCase
 {
     public function testNotLoggedIn()
     {
@@ -27,15 +30,13 @@ class OdrGetNameserversTest extends UnitTestCase
             'OdrTestApiKey'    => 'public$test',
             'OdrTestApiSecret' => 'secret$test',
             'OdrTestmode'      => 'on',
-            'domainObj'        => array(),
-            'domainid'         => '1',
-            'domainname'       => 'test.nl',
             'sld'              => 'test',
             'tld'              => 'nl',
-            'registrar'        => 'odr',
+            'searchTerm'       => null,
+            'tldsToInclude'    => array(),
         );
 
-        self::assertEquals(array('status' => \Odr_Whmcs::STATUS_ERROR, 'error' => 'Can\'t login, reason - Forced error'), odr_GetNameservers($data));
+        self::assertEquals(array('status' => \Odr_Whmcs::STATUS_ERROR, 'error' => 'Can\'t login, reason - Forced error'), odr_CheckAvailability($data));
     }
 
     public function testError()
@@ -52,23 +53,17 @@ class OdrGetNameserversTest extends UnitTestCase
 
         \Odr_Whmcs::$module = $module;
 
-        $data = array(
-            'whmcsVersion'     => self::WHMCS_VERSION,
-            'Username'         => '',
-            'OdrApiKey'        => 'public$live',
-            'OdrApiSecret'     => 'secret$live',
-            'OdrTestApiKey'    => 'public$test',
-            'OdrTestApiSecret' => 'secret$test',
-            'OdrTestmode'      => 'on',
-            'domainObj'        => array(),
-            'domainid'         => '1',
-            'domainname'       => 'test.nl',
-            'sld'              => 'test',
-            'tld'              => 'nl',
-            'registrar'        => 'odr',
-        );
+        $data = $this->getDefaultData();
 
-        self::assertEquals(array('error' => 'Following error occurred: Forced error'), odr_GetNameservers($data));
+        $result = odr_CheckAvailability($data);
+
+        self::assertInstanceOf(ResultsList::class, $result);
+
+        $res = $result->getResults();
+
+        self::assertArrayHasKey('test.nl', $res);
+
+        self::assertEquals(SearchResult::STATUS_REGISTERED, $res['test.nl']);
     }
 
     public function testException()
@@ -93,15 +88,13 @@ class OdrGetNameserversTest extends UnitTestCase
             'OdrTestApiKey'    => 'public$test',
             'OdrTestApiSecret' => 'secret$test',
             'OdrTestmode'      => 'on',
-            'domainObj'        => array(),
-            'domainid'         => '1',
-            'domainname'       => 'test.nl',
             'sld'              => 'test',
             'tld'              => 'nl',
-            'registrar'        => 'odr',
+            'searchTerm'       => null,
+            'tldsToInclude'    => array(),
         );
 
-        self::assertEquals(array('error' => 'Following error occurred: ' . $module::MESSAGE_CURL_ERROR_FOUND), odr_GetNameservers($data));
+        self::assertEquals(array('error' => 'Following error occurred: ' . $module::MESSAGE_CURL_ERROR_FOUND), odr_CheckAvailability($data));
     }
 
     public function testSuccess()
@@ -118,7 +111,58 @@ class OdrGetNameserversTest extends UnitTestCase
 
         \Odr_Whmcs::$module = $module;
 
-        $data = array(
+        $data = $this->getDefaultData();
+
+        $result = odr_CheckAvailability($data);
+
+        self::assertInstanceOf(ResultsList::class, $result);
+
+        $res = $result->getResults();
+
+        self::assertArrayHasKey('test.nl', $res);
+
+        self::assertEquals(SearchResult::STATUS_NOT_REGISTERED, $res['test.nl']);
+    }
+
+    public function testSuccessTldInclude()
+    {
+        $module = $this->getModule();
+
+        $module->setConfig(
+            array(
+                'api_key'    => 'public$success',
+                'api_secret' => 'secret$success',
+                'token'      => 'token$success',
+            )
+        );
+
+        \Odr_Whmcs::$module = $module;
+
+        $data = $this->getDefaultData();
+
+        $data['sld'] = null;
+        $data['tld'] = null;
+
+        $data['searchTerm'] = 'test';
+
+        $data['tldsToInclude'] = array(
+            '.nl',
+            '.eu',
+            '.ru',
+            '.be',
+            '.com',
+        );
+
+        $result = odr_CheckAvailability($data);
+
+        self::assertInstanceOf(ResultsList::class, $result);
+
+        self::assertCount(count($data['tldsToInclude']), $result->getResults());
+    }
+
+    public function getDefaultData()
+    {
+        return array(
             'whmcsVersion'     => self::WHMCS_VERSION,
             'Username'         => '',
             'OdrApiKey'        => 'public$live',
@@ -126,14 +170,10 @@ class OdrGetNameserversTest extends UnitTestCase
             'OdrTestApiKey'    => 'public$test',
             'OdrTestApiSecret' => 'secret$test',
             'OdrTestmode'      => 'on',
-            'domainObj'        => array(),
-            'domainid'         => '1',
-            'domainname'       => 'test.nl',
             'sld'              => 'test',
             'tld'              => 'nl',
-            'registrar'        => 'odr',
+            'searchTerm'       => null,
+            'tldsToInclude'    => array(),
         );
-
-        self::assertEquals(array('ns1' => 'ns1.test.ru', 'ns2' => 'ns2.test.ru'), odr_GetNameservers($data));
     }
 }

@@ -1,11 +1,24 @@
 <?php
+/*
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+*/
+
+use WHMCS\Domains\DomainLookup\ResultsList;
+use WHMCS\Domains\DomainLookup\SearchResult;
 
 require_once __DIR__ .'/helpers.php';
 
 defined('WHMCS_ODR_HOST_LIVE') || define('WHMCS_ODR_HOST_LIVE', 'https://www.opendomainregistry.net/');
 defined('WHMCS_ODR_HOST_TEST') || define('WHMCS_ODR_HOST_TEST', 'http://odrregistry.nl/');
+
+function odr_MetaData()
+{
+    return array(
+        'DisplayName' => 'OpenDomainRegistry',
+        'APIVersion'  => '3.1',
+    );
+}
 
 function odr_getConfigArray()
 {
@@ -122,7 +135,6 @@ function odr_GetNameservers($params)
 {
     $module = odr_Config($params);
     $login  = odr_Login($module);
-    $values = array();
 
     if ($login !== true) {
         return $login;
@@ -131,35 +143,36 @@ function odr_GetNameservers($params)
     try {
         $result = $module->getDomainInfo($params['domainname'])->getResult();
     } catch (Exception $e) {
-        $values['error'] = 'Following error occurred: ' . $e->getMessage();
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . $e->getMessage(),
+        );
     }
 
     if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-        $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response'])
+        );
     }
 
     $resp = $result['response'];
 
     $i = 1;
 
+    $nameservers = array();
+
     foreach ($resp['nameservers'] as $ns) {
-        $values['ns' . $i] = $ns;
+        $nameservers['ns' . $i] = $ns;
 
         $i++;
     }
 
-    return $values;
+    return $nameservers;
 }
 
 function odr_SaveNameservers($params)
 {
     $module = odr_Config($params);
     $login  = odr_Login($module);
-    $values = array();
 
     if ($login !== true) {
         return $login;
@@ -168,15 +181,21 @@ function odr_SaveNameservers($params)
     try {
         $result = $module->getDomainInfo($params['domainname'])->getResult();
     } catch (Exception $e) {
-        $values['error'] = 'Following error occurred: ' . $e->getMessage();
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . $e->getMessage(),
+        );
     }
 
     if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-        $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
+        return array(
+            'error' => 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']),
+        );
+    }
 
-        return $values;
+    if (empty($result['response']['status']) || $result['response']['status'] !== 'REGISTERED') {
+        return array(
+            'error' => 'This domain nameserver details can not be changed, because only REGISTERED domains can be updated',
+        );
     }
 
     $resp = $result['response'];
@@ -186,25 +205,167 @@ function odr_SaveNameservers($params)
     try {
         $result = $module->updateDomain($params['domainname'], $data)->getResult();
     } catch (Exception $e) {
-        $values['error'] = 'Following error occurred: ' . $e->getMessage();
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . $e->getMessage(),
+        );
     }
 
     if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-        $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']),
+        );
     }
 
-    return $values;
+    return array(
+        'success' => true,
+    );
+}
+
+function odr_GetContactDetails($params)
+{
+    $module   = odr_Config($params);
+    $login    = odr_Login($module);
+    $contacts = array();
+
+    if ($login !== true) {
+        return $login;
+    }
+
+    try {
+        $info = $module->getDomainInfo($params['sld'] . '.' . ltrim($params['tld'], '.'))->getResult();
+    } catch (Exception $e) {
+        return array(
+            'error' => 'Following error occurred: ' . $e->getMessage(),
+        );
+    }
+
+    if ($info['status'] !== Api_Odr::STATUS_SUCCESS) {
+        return array(
+            'error' => 'Following error occurred: ' . (is_array($info['response']) ? $info['response']['message'] : $info['response']),
+        );
+    }
+
+    $requestedContacts = array();
+
+    foreach ($info['response']['contacts_map'] as $type => $cId) {
+        if (!empty($requestedContacts[$cId])) {
+            $contacts[Odr_Whmcs::mapContactTypeToWhmcs($type)] = $requestedContacts[$cId];
+
+            continue;
+        }
+
+        try {
+            $contact = $module->getContact($cId)->getResult();
+        } catch (Exception $e) {
+            return array(
+                'error' => 'Following error occurred: ' . $e->getMessage(),
+            );
+        }
+
+        if ($contact['status'] !== Api_Odr::STATUS_SUCCESS) {
+            return array(
+                'error' => 'Following error occurred: ' . (is_array($contact['response']) ? $contact['response']['message'] : $contact['response']),
+            );
+        }
+
+        $contacts[Odr_Whmcs::mapContactTypeToWhmcs($type)] = Odr_Whmcs::odrContactDataToWhmcs($contact['response']);
+
+        $requestedContacts[$cId] = $contacts[Odr_Whmcs::mapContactTypeToWhmcs($type)];
+    }
+
+    return $contacts;
+}
+
+function odr_SaveContactDetails($params)
+{
+    $module = odr_Config($params);
+    $login  = odr_Login($module);
+
+    if ($login !== true) {
+        return $login;
+    }
+
+    try {
+        $info = $module->getDomainInfo($params['sld'] . '.' . ltrim($params['tld'], '.'))->getResult();
+    } catch (Exception $e) {
+        return array(
+            'error' => 'Following error occurred: ' . $e->getMessage(),
+        );
+    }
+
+    if ($info['status'] !== Api_Odr::STATUS_SUCCESS) {
+        return array(
+            'error' => 'Following error occurred: ' . (is_array($info['response']) ? $info['response']['message'] : $info['response']),
+        );
+    }
+
+    if (empty($info['response']['status']) || $info['response']['status'] !== 'REGISTERED') {
+        return array(
+            'error' => 'This domain contact details can not be changed, because only REGISTERED domains can be updated',
+        );
+    }
+
+    if (empty($params['contactdetails'])) {
+        return array(
+            'error' => 'Specify at least some contact info before saving',
+        );
+    }
+
+    $contacts = array();
+
+    foreach ($params['contactdetails'] as $type => $contact) {
+        $contactId = Odr_Whmcs::obtainContact($module, $contact);
+
+        $contacts[Odr_Whmcs::mapContactTypeToOdr($type)] = $contactId;
+    }
+
+    foreach (array('REGISTRANT', 'ONSITE', 'TECH') as $type) {
+        if (empty($contacts[$type])) {
+            $contacts[$type] = $info['contacts_map'][$type];
+        }
+    }
+
+    $data = Odr_Whmcs::prepareDomainData($params, $contacts['REGISTRANT'], $contacts['ONSITE'], empty($contacts['TECH']) ? $contacts['ONSITE'] : $contacts['TECH']);
+
+    $i = 1;
+
+    foreach ($info['response']['nameservers'] as $ns) {
+        if (is_string($ns) && !$ns) {
+            continue;
+        }
+
+        if (is_array($ns) && empty($ns['host'])) {
+            continue;
+        }
+
+        $data["ns{$i}"] = $ns;
+
+        $i++;
+    }
+
+    try {
+        $result = $module->updateDomain($params['domainname'], $data)->getResult();
+    } catch (Exception $e) {
+        return array(
+            'error' => 'Following error occurred: ' . $e->getMessage(),
+        );
+    }
+
+    if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
+        return array(
+            'error' => 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']),
+        );
+    }
+
+    return array(
+        'success' => true,
+    );
 }
 
 function odr_RegisterDomain($params)
 {
     $module = odr_Config($params);
     $login  = odr_Login($module);
-    $values = array();
 
     if ($login !== true) {
         return $login;
@@ -221,25 +382,26 @@ function odr_RegisterDomain($params)
     try {
         $result = $module->registerDomain($params['domainname'], $domainData)->getResult();
     } catch (Exception $e) {
-        $values['error'] = 'Following error occurred: ' . $e->getMessage();
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . $e->getMessage(),
+        );
     }
 
     if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-        $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']),
+        );
     }
 
-    return $values;
+    return array(
+        'success' => $result['response']['status'] === 'COMPLETED',
+    );
 }
 
 function odr_TransferDomain($params)
 {
     $module = odr_Config($params);
     $login  = odr_Login($module);
-    $values = array();
 
     if ($login !== true) {
         return $login;
@@ -251,30 +413,31 @@ function odr_TransferDomain($params)
         return $contactId;
     }
 
-    $domainData = \Odr_Whmcs::prepareDomainData($params, $contactId);
+    $domainData = Odr_Whmcs::prepareDomainData($params, $contactId);
 
     try {
         $result = $module->transferDomain($params['domainname'], $domainData)->getResult();
-    } catch (\Exception $e) {
-        $values['error'] = 'Following error occurred: ' . $e->getMessage();
-
-        return $values;
+    } catch (Exception $e) {
+        return array(
+            'error' => 'Following error occurred: ' . $e->getMessage(),
+        );
     }
 
     if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-        $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']),
+        );
     }
 
-    return $values;
+    return array(
+        'success' => $result['response']['status'] === 'COMPLETED',
+    );
 }
 
 function odr_RenewDomain($params)
 {
     $module = odr_Config($params);
     $login  = odr_Login($module);
-    $values = array();
 
     if ($login !== true) {
         return $login;
@@ -282,52 +445,55 @@ function odr_RenewDomain($params)
 
     try {
         $result = $module->getDomainInfo($params['domainname'])->getResult();
-    } catch (\Exception $e) {
-        $values['error'] = 'Following error occurred: ' . $e->getMessage();
-
-        return $values;
+    } catch (Exception $e) {
+        return array(
+            'error' => 'Following error occurred: ' . $e->getMessage(),
+        );
     }
 
     if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-        $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']),
+        );
     }
 
     if ($result['response']['status'] !== 'QUARANTINE') {
+        $response = array();
+
         if ($result['response']['autorenew'] === 'OFF') {
-            $values['error'] = 'Renewal is impossible';
-        } else {
-            $values['status'] = 'Domain Renewed';
+            return array(
+                'error' => 'Renewal is impossible',
+            );
         }
 
-        return $values;
+        $response['status'] = 'Domain Renewed';
+
+        return $response;
     }
 
     $reactivate = $module->reactivateDomain($params['domainname'])->getResult();
 
     if ($reactivate['status'] !== Api_Odr::STATUS_SUCCESS) {
-        $values['error'] = 'Following error occurred: ' . (is_array($reactivate['response']) ? $reactivate['response']['message'] : $reactivate['response']);
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . (is_array($reactivate['response']) ? $reactivate['response']['message'] : $reactivate['response']),
+        );
     }
 
     if (!$reactivate['response']['result']) {
-        $values['error'] = 'Reactivation is impossible';
-
-        return $values;
+        return array(
+            'error' => 'Reactivation is impossible',
+        );
     }
 
-    $values['status'] = 'Domain Reactivated';
-
-    return $values;
+    return array(
+        'status' => 'Domain Reactivated',
+    );
 }
 
 function odr_GetEPPCode($params)
 {
     $module = odr_Config($params);
     $login  = odr_Login($module);
-    $values = array();
 
     if ($login !== true) {
         return $login;
@@ -335,36 +501,39 @@ function odr_GetEPPCode($params)
 
     try {
         $result = $module->getDomainAuthCode($params['domainname'])->getResult();
-    } catch (\Exception $e) {
-        $values['error'] = 'Following error occurred: ' . $e->getMessage();
-
-        return $values;
+    } catch (Exception $e) {
+        return array(
+            'error' => 'Following error occurred: ' . $e->getMessage(),
+        );
     }
 
     if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-        $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']),
+        );
     }
 
-    if (!empty($result['response']['auth_code'])) {
-        if (is_string($result['response']['auth_code'])) {
-            $values['eppcode'] = $result['response']['auth_code'];
-        } else {
-            $values['eppcode'] = 'EPP code was sent to domain owner email address';
-        }
-    } else {
-        $values['error'] = 'Either EPP code not supported or it was sent to domain owner email address';
+    if (empty($result['response']['auth_code'])) {
+        return array(
+            'error' => 'Either EPP code not supported or it was sent to domain owner email address',
+        );
     }
 
-    return $values;
+    if (is_string($result['response']['auth_code'])) {
+        return array(
+            'eppcode' => $result['response']['auth_code'],
+        );
+    }
+
+    return array(
+        'eppcode' => 'EPP code was sent to domain owner email address',
+    );
 }
 
 function odr_TransferSync($params)
 {
     $module = odr_Config($params);
     $login  = odr_Login($module);
-    $values = array();
 
     if ($login !== true) {
         return $login;
@@ -372,36 +541,37 @@ function odr_TransferSync($params)
 
     try {
         $result = $module->getDomain($params['domainname'])->getResult();
-    } catch (\Exception $e) {
-        $values['error'] = 'Following error occurred: ' . $e->getMessage();
-
-        return $values;
+    } catch (Exception $e) {
+        return array(
+            'error' => 'Following error occurred: ' . $e->getMessage(),
+        );
     }
 
     if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-        $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']),
+        );
     }
+
+    $response = array();
 
     if ($result['response']['status'] === 'REGISTERED') {
-        $values['completed']  = true;
-        $values['expirydate'] = $result['response']['expiration_date'];
+        $response['completed']  = true;
+        $response['expirydate'] = $result['response']['expiration_date'];
     } elseif ($result['response']['status'] === 'PENDING') {
-        $values['error'] = 'Domain ' . $params['domainname'] . ' is still in the following status: ' . $result['response']['status'];
+        $response['error'] = 'Domain ' . $params['domainname'] . ' is still in the following status: ' . $result['response']['status'];
     } else {
-        $values['failed'] = true;
-        $values['reason'] = 'Domain ' . $params['domainname'] . ' is currently in the following status: ' . $result['response']['status'];
+        $response['failed'] = true;
+        $response['reason'] = 'Domain ' . $params['domainname'] . ' is currently in the following status: ' . $result['response']['status'];
     }
 
-    return $values;
+    return $response;
 }
 
 function odr_Sync($params)
 {
     $module = odr_Config($params);
     $login  = odr_Login($module);
-    $values = array();
 
     if ($login !== true) {
         return $login;
@@ -413,37 +583,79 @@ function odr_Sync($params)
 
     try {
         $result = $module->getDomainInfo($params['domainname'])->getResult();
-    } catch (\Exception $e) {
-        $values['error'] = 'Following error occurred: ' . $e->getMessage();
-
-        return $values;
+    } catch (Exception $e) {
+        return array(
+            'error' => 'Following error occurred: ' . $e->getMessage(),
+        );
     }
 
     if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-        $values['error'] = '[ERROR] Sync contact | Error retrieving domain details ODR for ' . $params['domainname'];
-
-        return $values;
+        return array(
+            'error' => '[ERROR] Sync contact | Error retrieving domain details ODR for ' . $params['domainname'],
+        );
     }
+
+    $response = array();
 
     $domain = $result['response'];
 
     // Sync domain status
     if ($domain['status'] === 'REGISTERED') {
-        $values['active'] = true;
+        $response['active'] = true;
     } elseif ($domain['status'] === 'DELETED' || $domain['status'] === 'QUARANTINE') {
-        $values['expired'] = true;
+        $response['expired'] = true;
     }
 
-    $values['expirydate'] = $domain['expiration_date'];
+    $response['expirydate'] = $domain['expiration_date'];
 
-    return $values;
+    return $response;
+}
+
+function odr_CheckAvailability($params)
+{
+    return odr_GetDomainSuggestions($params);
+}
+
+function odr_GetDomainSuggestions($params)
+{
+    $module = odr_Config($params);
+    $login  = odr_Login($module);
+
+    if ($login !== true) {
+        return $login;
+    }
+
+    $domains = array();
+
+    $name = empty($params['sld']) ? $params['searchTerm'] : $params['sld'];
+
+    if (empty($params['tld'])) {
+        foreach ($params['tldsToInclude'] as $tld) {
+            $tld = ltrim($tld, '.');
+
+            $domains[] = array(
+                'full' => $name . '.' . $tld,
+                'sld'  => $name,
+                'tld'  => $tld,
+            );
+        }
+    } else {
+        $tld = ltrim($params['tld'], '.');
+
+        $domains[] = array(
+            'full' => $name . '.' . $tld,
+            'sld'  => $name,
+            'tld'  => $tld,
+        );
+    }
+
+    return Odr_Whmcs::checkDomainsState($module, $domains);
 }
 
 function odr_RequestDelete($params)
 {
     $module = odr_Config($params);
     $login  = odr_Login($module);
-    $values = array();
 
     if ($login !== true) {
         return $login;
@@ -452,27 +664,29 @@ function odr_RequestDelete($params)
     try {
         $result = $module->setDomainAutorenewOff($params['domainname'])->getResult();
     } catch (\Exception $e) {
-        $values['error'] = 'Following error occurred: ' . $e->getMessage();
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . $e->getMessage(),
+        );
     }
 
     if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-        $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
-
-        return $values;
+        return array(
+            'error' => 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']),
+        );
     }
 
     if (!$result['response']['result']) {
-        $values['error'] = 'Domain deletion already scheduled';
-
-        return $values;
+        return array(
+            'error' => 'Domain deletion already scheduled',
+        );
     }
 
-    $values['domainid'] = $params['domainid'];
-    $values['status']   = 'Cancelled';
+    $response = array();
 
-    return $values;
+    $response['domainid'] = $params['domainid'];
+    $response['status']   = 'Cancelled';
+
+    return $response;
 }
 
 class Odr_Whmcs
@@ -480,7 +694,7 @@ class Odr_Whmcs
     const STATUS_SUCCESS = 'success';
     const STATUS_ERROR   = 'error';
 
-    const URL_TEST = 'http://api.odrregistry.nl';
+    const URL_TEST = 'http://apiodr.kaa.tomoko.rosapp.ru';
     const URL_LIVE = Api_Odr::URL;
 
     const MODULE = 'odr';
@@ -495,6 +709,14 @@ class Odr_Whmcs
      */
     static public $module;
 
+    /**
+     * Performs a search over all available contacts
+     *
+     * @param string $name     Contact name
+     * @param array  $contacts All available contacts
+     *
+     * @return null|int
+     */
     static public function searchContact($name, array $contacts)
     {
         foreach ($contacts as $val) {
@@ -512,6 +734,15 @@ class Odr_Whmcs
         return null;
     }
 
+    /**
+     * Correctly formats contact name
+     *
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $companyName
+     *
+     * @return string
+     */
     static public function formatContactName($firstName, $lastName, $companyName = '')
     {
         $names = array(
@@ -526,6 +757,13 @@ class Odr_Whmcs
         return implode(' ', array_filter($names));
     }
 
+    /**
+     * Returns first letter of name, uppercased
+     *
+     * @param string $name
+     *
+     * @return string
+     */
     static public function getInitials($name)
     {
         $initials = mb_substr($name, 0, 1);
@@ -533,6 +771,17 @@ class Odr_Whmcs
         return mb_strtoupper($initials);
     }
 
+    /**
+     * Returns uppercased initials of each name piece
+     * For example:
+     * Alex Name = AN
+     * Name Alex Fed = NAF
+     * john test = JT
+     *
+     * @param string $name
+     *
+     * @return string
+     */
     static public function getInitialsFull($name)
     {
         $initials = '';
@@ -545,6 +794,11 @@ class Odr_Whmcs
         return mb_strtoupper($initials);
     }
 
+    /**
+     * Returns array of available countries
+     *
+     * @return array
+     */
     static public function getCountries()
     {
         return array(
@@ -634,6 +888,14 @@ class Odr_Whmcs
         );
     }
 
+    /**
+     * Returns country data
+     * If country is unknown, 'nl' will be used
+     *
+     * @param string $country
+     *
+     * @return array
+     */
     static public function getCountry($country)
     {
         $countries = self::getCountries();
@@ -647,6 +909,14 @@ class Odr_Whmcs
         return $countries[$country];
     }
 
+    /**
+     * Formats a phone
+     *
+     * @param string $country
+     * @param string $phone
+     *
+     * @return string
+     */
     static public function formatPhone($country, $phone)
     {
         if ($country[0] !== '+') {
@@ -775,6 +1045,7 @@ class Odr_Whmcs
 
         $country     = self::getCountry($whmcs['country']);
         $phone       = self::getPhone($whmcs['phonenumber']);
+        $fax         = empty($whmcs['faxnumber']) ? null : self::getPhone($whmcs['faxnumber']);
         $zip         = self::getPostalCode($whmcs['postcode']);
         $initials    = self::getInitials($whmcs['firstname']);
         $legalForm   = self::getLegalForm($whmcs['companyname']);
@@ -798,7 +1069,7 @@ class Odr_Whmcs
             'street'       => $street['street'],
             'house_number' => $houseNumber,
             'phone'        => self::formatPhone($country['phone'], $phone),
-            'fax'          => null,
+            'fax'          => $fax === null ? null : self::formatPhone($country['phone'], $fax),
             'postal_code'  => $zip,
 
             'organization_legal_form' => $legalForm,
@@ -807,13 +1078,47 @@ class Odr_Whmcs
             'company_city'         => $whmcs['city'],
             'company_email'        => $whmcs['email'],
             'company_phone'        => self::formatPhone($country['phone'], $phone),
-            'company_fax'          => null,
+            'company_fax'          => $fax === null ? null : self::formatPhone($country['phone'], $fax),
             'company_postal_code'  => $zip,
             'company_street'       => $street['street'],
             'company_house_number' => $houseNumber,
         );
     }
 
+    /**
+     * Converts ODR data to WHMCS format
+     *
+     * @param array $odr Source data
+     *
+     * @return array|string|null Formatted data
+     *
+     * @static
+     */
+    static public function odrContactDataToWhmcs(array $odr)
+    {
+        return array(
+            'firstname'   => $odr['first_name'],
+            'lastname'    => $odr['last_name'],
+            'companyname' => $odr['organization_legal_form'] === Odr_Whmcs::LEGAL_FORM_PERSON ? '' : $odr['company_name'],
+            'email'       => $odr['email'],
+            'address1'    => $odr['street'] . ', ' . $odr['house_number'],
+            'address2'    => '',
+            'city'        => $odr['city'],
+            'state'       => $odr['state'],
+            'postcode'    => $odr['postal_code'],
+            'country'     => $odr['country'],
+            'phonenumber' => $odr['phone'],
+            'faxnumber'   => $odr['fax'],
+        );
+    }
+
+    /**
+     * Returns ODR API module instance, based on passed parameters
+     *
+     * @param array $params
+     *
+     * @return Api_Odr|null
+     */
     static public function getModule(array $params)
     {
         if (self::$module) {
@@ -882,11 +1187,23 @@ class Odr_Whmcs
         return true;
     }
 
+    /**
+     * Returns key, under which login state is stored in session array
+     *
+     * @return string
+     */
     static public function getSessionKey()
     {
         return self::MODULE . '_loginState';
     }
 
+    /**
+     * Clears the data, then sorts result array by key
+     *
+     * @param array $contact
+     *
+     * @return array
+     */
     static public function reformatContact(array $contact)
     {
         foreach (self::getUselessContactData() as $key) {
@@ -900,6 +1217,14 @@ class Odr_Whmcs
         return $contact;
     }
 
+    /**
+     * Returns array of useless array keys
+     * This useless contact fields later will be removed, in 'reformatContact'
+     *
+     * @return array
+     *
+     * @see reformatContact
+     */
     static public function getUselessContactData()
     {
         return array(
@@ -918,22 +1243,36 @@ class Odr_Whmcs
         );
     }
 
+    /**
+     * Obtains contact
+     * If contact is not found in ODR, new one will be created
+     *
+     * @param \Api_Odr $module
+     * @param array    $params
+     *
+     * @return array|int|null
+     */
     static public function obtainContact(Api_Odr $module, array $params)
     {
-        $values = array();
+        $filters = array(
+            'contact_name' => array(
+                'name'         => $params['firstname'] . ' ' . $params['lastname'],
+                'company_name' => $params['companyname'],
+            ),
+        );
 
         try {
-            $result = $module->getContacts()->getResult();
+            $result = $module->getContacts($filters)->getResult();
         } catch (\Exception $e) {
-            $values['error'] = 'Following error occurred: ' . $e->getMessage();
-
-            return $values;
+            return array(
+                'error' => 'Following error occurred: ' . $e->getMessage(),
+            );
         }
 
         if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-            $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
-
-            return $values;
+            return array(
+                'error' => 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']),
+            );
         }
 
         $contactId = Odr_Whmcs::searchContact(Odr_Whmcs::formatContactName($params['firstname'], $params['lastname'], $params['companyname']), $result['response']);
@@ -943,37 +1282,49 @@ class Odr_Whmcs
             $contactData = Odr_Whmcs::contactDataToOdr($params);
 
             if ($contactData === null || is_string($contactData)) {
-                $values['error'] = 'Following error occurred: ' . (is_string($contactData) ? $contactData : 'Contact creation is impossible, due to corrupted data');
-
-                return $values;
+                return array(
+                    'error' => 'Following error occurred: ' . (is_string($contactData) ? $contactData : 'Contact creation is impossible, due to corrupted data'),
+                );
             }
+
+            $contactData = array_map('trim', $contactData);
 
             try {
                 $result = $module->createContact($contactData)->getResult();
             } catch (\Exception $e) {
-                $values['error'] = 'Following error occurred: ' . $e->getMessage();
-
-                return $values;
+                return array(
+                    'error' => 'Following error occurred: ' . $e->getMessage(),
+                );
             }
 
             if ($result['status'] !== Api_Odr::STATUS_SUCCESS) {
-                $values['error'] = 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']);
-
-                return $values;
+                return array(
+                    'error' => 'Following error occurred: ' . (is_array($result['response']) ? $result['response']['message'] : $result['response']),
+                );
             }
 
             $contactId = empty($result['response']['data']['id']) ? null : $result['response']['data']['id'];
         }
 
         if ($contactId === null) {
-            $values['error'] = 'Contact creation was not successful, please either try using different data or contact support';
-
-            return $values;
+            return array(
+                'error' => 'Contact creation was not successful, please either try using different data or contact support',
+            );
         }
 
         return $contactId;
     }
 
+    /**
+     * Prepares data for domain operations
+     *
+     * @param array    $params
+     * @param int      $contactRegistrant
+     * @param null|int $contactOnsite
+     * @param null|int $contactTech
+     *
+     * @return array
+     */
     static public function prepareDomainData(array $params, $contactRegistrant, $contactOnsite = null, $contactTech = null)
     {
         if ($contactOnsite === null) {
@@ -1008,5 +1359,89 @@ class Odr_Whmcs
         }
 
         return $domain;
+    }
+
+    /**
+     * Checks the domain availability state
+     *
+     * @param \Api_Odr $module
+     * @param array    $domains
+     *
+     * @return array|ResultsList
+     */
+    static public function checkDomainsState(Api_Odr $module, array $domains)
+    {
+        $results = new ResultsList();
+
+        if (empty($domains)) {
+            return $results;
+        }
+
+        foreach ($domains as $domain) {
+            try {
+                $result = $module->checkDomain($domain['full'])->getResult();
+            } catch (\Exception $e) {
+                return array(
+                    'error' => 'Following error occurred: ' . $e->getMessage(),
+                );
+            }
+
+            $searchResult = new SearchResult($domain['sld'], $domain['tld']);
+
+            $status = SearchResult::STATUS_REGISTERED;
+
+            if ($result['status'] !== Api_Odr::STATUS_ERROR && !empty($result['response']['is_available'])) {
+                $status = SearchResult::STATUS_NOT_REGISTERED;
+            }
+
+            $searchResult->setStatus($status);
+
+            $results->append($searchResult);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Maps ODR contact type to WHMCS contact type
+     *
+     * @param string $type
+     *
+     * @return null|string
+     */
+    static public function mapContactTypeToWhmcs($type)
+    {
+        $map = array_flip(self::getContactTypesMap());
+
+        return empty($map[$type]) ? null : $map[$type];
+    }
+
+    /**
+     * Maps WHMCS contact type to ODR contact type
+     *
+     * @param string $type
+     *
+     * @return null|string
+     */
+    static public function mapContactTypeToOdr($type)
+    {
+        $map = self::getContactTypesMap();
+
+        return empty($map[$type]) ? null : $map[$type];
+    }
+
+    /**
+     * Returns array of available contact types
+     *
+     * @return array
+     */
+    static public function getContactTypesMap()
+    {
+        return array(
+            'Registrant' => 'REGISTRANT',
+            'Technical'  => 'TECH',
+            'Billing'    => 'BILLING',
+            'Admin'      => 'ONSITE',
+        );
     }
 }

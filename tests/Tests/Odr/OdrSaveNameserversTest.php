@@ -101,7 +101,7 @@ class OdrSaveNameserversTest extends UnitTestCase
             'registrar'        => 'odr',
         );
 
-        self::assertEquals(array('error' => 'This domain contact details can not be changed, because only REGISTERED domains can be updated'), odr_SaveNameservers($data));
+        self::assertEquals(array('error' => 'This domain nameserver details can not be changed, because only REGISTERED domains can be updated'), odr_SaveNameservers($data));
     }
 
     public function testException()

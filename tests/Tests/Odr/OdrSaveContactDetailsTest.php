@@ -3,7 +3,7 @@ namespace Tests\Odr;
 
 use Tests\UnitTestCase;
 
-class OdrGetContactDetailsTest extends UnitTestCase
+class OdrSaveContactDetailsTest extends UnitTestCase
 {
     public function testNotLoggedIn()
     {

@@ -221,6 +221,7 @@ class OdrSyncTest extends UnitTestCase
         $result = array(
             'active'     => true,
             'expirydate' => date('Y') + 1 . '-01-01 00:00:00',
+            'expired'    => false,
         );
 
         self::assertEquals($result, odr_Sync($data));
@@ -262,6 +263,7 @@ class OdrSyncTest extends UnitTestCase
         $result = array(
             'active'     => true,
             'expirydate' => date('Y') + 1 . '-01-01 00:00:00',
+            'expired'    => false,
         );
 
         self::assertEquals($result, odr_Sync($data));
@@ -303,6 +305,7 @@ class OdrSyncTest extends UnitTestCase
         $result = array(
             'expired'    => true,
             'expirydate' => date('Y') + 1 . '-01-01 00:00:00',
+            'active'     => false,
         );
 
         self::assertEquals($result, odr_Sync($data));
@@ -344,6 +347,7 @@ class OdrSyncTest extends UnitTestCase
         $result = array(
             'expired'    => true,
             'expirydate' => date('Y') + 1 . '-01-01 00:00:00',
+            'active'     => false,
         );
 
         self::assertEquals($result, odr_Sync($data));
@@ -385,6 +389,7 @@ class OdrSyncTest extends UnitTestCase
         $result = array(
             'expired'    => true,
             'expirydate' => date('Y') + 1 . '-01-01 00:00:00',
+            'active'     => false,
         );
 
         self::assertEquals($result, odr_Sync($data));
@@ -426,6 +431,7 @@ class OdrSyncTest extends UnitTestCase
         $result = array(
             'expired'    => true,
             'expirydate' => date('Y') + 1 . '-01-01 00:00:00',
+            'active'     => false,
         );
 
         self::assertEquals($result, odr_Sync($data));

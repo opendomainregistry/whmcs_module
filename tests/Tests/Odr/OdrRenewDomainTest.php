@@ -146,7 +146,43 @@ class OdrRenewDomainTest extends UnitTestCase
             'companyname'      => 'C',
         );
 
-        self::assertEquals(array('status' => 'Domain Renewed'), odr_RenewDomain($data));
+        self::assertEquals(array('status' => 'Domain Renewed. Please be aware, that this operation only changes the date in WHMCS and not in ODR. ODR will renew domain on it\'s own and you can always obtain correct date using Sync'), odr_RenewDomain($data));
+    }
+
+    public function testSuccessAutorenewOff()
+    {
+        $module = $this->getModule();
+
+        $module->setConfig(
+            array(
+                'api_key'    => 'public$success',
+                'api_secret' => 'secret$success',
+                'token'      => 'token$suautorenewoff',
+            )
+        );
+
+        \Odr_Whmcs::$module = $module;
+
+        $data = array(
+            'whmcsVersion'     => self::WHMCS_VERSION,
+            'Username'         => '',
+            'OdrApiKey'        => 'public$live',
+            'OdrApiSecret'     => 'secret$live',
+            'OdrTestApiKey'    => 'public$test',
+            'OdrTestApiSecret' => 'secret$test',
+            'OdrTestmode'      => 'on',
+            'domainObj'        => array(),
+            'domainid'         => '1',
+            'domainname'       => 'test.nl',
+            'sld'              => 'test',
+            'tld'              => 'nl',
+            'registrar'        => 'odr',
+            'firstname'        => 'A',
+            'lastname'         => 'B',
+            'companyname'      => 'C',
+        );
+
+        self::assertEquals(array('error' => 'Renewal is impossible'), odr_RenewDomain($data));
     }
 
     public function testSuccessPending()
@@ -182,7 +218,7 @@ class OdrRenewDomainTest extends UnitTestCase
             'companyname'      => 'C',
         );
 
-        self::assertEquals(array('error' => 'Renewal is impossible'), odr_RenewDomain($data));
+        self::assertEquals(array('error' => 'Renewal is impossible, invalid domain status'), odr_RenewDomain($data));
     }
 
     public function testSuccessDeleted()
@@ -218,7 +254,7 @@ class OdrRenewDomainTest extends UnitTestCase
             'companyname'      => 'C',
         );
 
-        self::assertEquals(array('error' => 'Renewal is impossible'), odr_RenewDomain($data));
+        self::assertEquals(array('error' => 'Renewal is impossible, invalid domain status'), odr_RenewDomain($data));
     }
 
     public function testSuccessQuarantine()

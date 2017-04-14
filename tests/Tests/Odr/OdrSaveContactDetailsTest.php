@@ -24,6 +24,105 @@ class OdrSaveContactDetailsTest extends UnitTestCase
         self::assertEquals(array('status' => \Odr_Whmcs::STATUS_ERROR, 'error' => 'Can\'t login, reason - Forced error'), odr_SaveContactDetails($data));
     }
 
+    public function testError()
+    {
+        $module = $this->getModule();
+
+        $module->setConfig(
+            array(
+                'api_key'    => 'public$success',
+                'api_secret' => 'secret$success',
+                'token'      => 'token$failure',
+            )
+        );
+
+        \Odr_Whmcs::$module = $module;
+
+        $data = array(
+            'whmcsVersion'     => self::WHMCS_VERSION,
+            'Username'         => '',
+            'OdrApiKey'        => 'public$live',
+            'OdrApiSecret'     => 'secret$live',
+            'OdrTestApiKey'    => 'public$test',
+            'OdrTestApiSecret' => 'secret$test',
+            'OdrTestmode'      => 'on',
+            'domainObj'        => array(),
+            'domainid'         => '1',
+            'domainname'       => 'test.nl',
+            'sld'              => 'test',
+            'tld'              => 'nl',
+            'registrar'        => 'odr',
+        );
+
+        self::assertEquals(array('error' => 'Following error occurred: Forced error'), odr_SaveContactDetails($data));
+    }
+
+    public function testException()
+    {
+        $module = $this->getModule();
+
+        $module->setConfig(
+            array(
+                'api_key'    => 'public$success',
+                'api_secret' => 'secret$success',
+                'token'      => 'token$thrown',
+            )
+        );
+
+        \Odr_Whmcs::$module = $module;
+
+        $data = array(
+            'whmcsVersion'     => self::WHMCS_VERSION,
+            'Username'         => '',
+            'OdrApiKey'        => 'public$live',
+            'OdrApiSecret'     => 'secret$live',
+            'OdrTestApiKey'    => 'public$test',
+            'OdrTestApiSecret' => 'secret$test',
+            'OdrTestmode'      => 'on',
+            'domainObj'        => array(),
+            'domainid'         => '1',
+            'domainname'       => 'test.nl',
+            'sld'              => 'test',
+            'tld'              => 'nl',
+            'registrar'        => 'odr',
+        );
+
+        self::assertEquals(array('error' => 'Following error occurred: ' . $module::MESSAGE_CURL_ERROR_FOUND), odr_SaveContactDetails($data));
+    }
+
+    public function testSuccessInfoPending()
+    {
+        $module = $this->getModule();
+
+        $module->setConfig(
+            array(
+                'api_key'    => 'public$success',
+                'api_secret' => 'secret$success',
+                'token'      => 'token$supending',
+            )
+        );
+
+        \Odr_Whmcs::$module = $module;
+
+        $data = array(
+            'whmcsVersion'     => self::WHMCS_VERSION,
+            'Username'         => '',
+            'OdrApiKey'        => 'public$live',
+            'OdrApiSecret'     => 'secret$live',
+            'OdrTestApiKey'    => 'public$test',
+            'OdrTestApiSecret' => 'secret$test',
+            'OdrTestmode'      => 'on',
+            'domainObj'        => array(),
+            'domainid'         => '1',
+            'domainname'       => 'test.nl',
+            'sld'              => 'test',
+            'tld'              => 'nl',
+            'registrar'        => 'odr',
+        );
+
+        self::assertEquals(array('error' => 'This domain contact details can not be changed, because only REGISTERED domains can be updated'), odr_SaveContactDetails($data));
+    }
+
     public function getDefaultData()
     {
         return array(

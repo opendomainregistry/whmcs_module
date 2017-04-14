@@ -158,6 +158,27 @@ class Odr extends \Api_Odr
                         'api_handle'      => 'test',
                         'tld'             => 'nl',
                         'status'          => 'REGISTERED',
+                        'autorenew'       => 'ON',
+                        'created'         => date('Y') . '-01-01 00:00:00',
+                        'updated'         => date('Y') . '-01-01 00:00:00',
+                        'expiration_date' => (date('Y') + 1) . '-01-01 00:00:00',
+                    ),
+                )
+            );
+        }
+
+        if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$suautorenewoff') === 0) {
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'id'              => '1',
+                        'name'            => 'test',
+                        'api_handle'      => 'test',
+                        'tld'             => 'nl',
+                        'status'          => 'REGISTERED',
+                        'autorenew'       => 'OFF',
                         'created'         => date('Y') . '-01-01 00:00:00',
                         'updated'         => date('Y') . '-01-01 00:00:00',
                         'expiration_date' => (date('Y') + 1) . '-01-01 00:00:00',
@@ -177,6 +198,7 @@ class Odr extends \Api_Odr
                         'api_handle'      => 'test',
                         'tld'             => 'nl',
                         'status'          => 'DELETED',
+                        'autorenew'       => 'ON',
                         'created'         => date('Y') . '-01-01 00:00:00',
                         'updated'         => date('Y') . '-01-01 00:00:00',
                         'expiration_date' => (date('Y') + 1) . '-01-01 00:00:00',
@@ -195,6 +217,7 @@ class Odr extends \Api_Odr
                         'name'            => 'test',
                         'api_handle'      => 'test',
                         'status'          => 'QUARANTINE',
+                        'autorenew'       => 'ON',
                         'tld'             => 'nl',
                         'created'         => date('Y') . '-01-01 00:00:00',
                         'updated'         => date('Y') . '-01-01 00:00:00',
@@ -214,6 +237,7 @@ class Odr extends \Api_Odr
                         'name'            => 'test',
                         'api_handle'      => 'test',
                         'status'          => 'PENDING',
+                        'autorenew'       => 'ON',
                         'tld'             => 'nl',
                         'created'         => date('Y') . '-01-01 00:00:00',
                         'updated'         => date('Y') . '-01-01 00:00:00',
@@ -385,6 +409,40 @@ class Odr extends \Api_Odr
                         'name'            => $name,
                         'domain_name'     => $name,
                         'autorenew'       => 'ON',
+                        'tld'             => $tld,
+                        'expiration_date' => (date('Y') + 1) . '-01-01 00:00:00',
+                        'auth_code'       => $tld === 'be' ? null : 'TEST1221TSET',
+                        'contacts'        => array(
+                            'REGISTRANT' => 'XXX001',
+                            'ONSITE'     => 'XXX001'
+                        ),
+                        'contacts_map'    => array(
+                            'REGISTRANT' => 24,
+                            'ONSITE'     => 32
+                        ),
+                        'nameservers' => array(
+                            'ns1.test.ru',
+                            'ns2.test.ru',
+                        ),
+                    ),
+                )
+            );
+        }
+
+        if (!empty($this->_config['token']) && strpos($this->_config['token'], 'token$suautorenewoff') === 0) {
+            list($name, $tld) = explode('.', $domain, 2);
+
+            return $this->setResult(
+                array(
+                    'status'   => self::STATUS_SUCCESS,
+                    'code'     => 200,
+                    'response' => array(
+                        'id'              => 3,
+                        'domain_id'       => 3,
+                        'status'          => 'REGISTERED',
+                        'name'            => $name,
+                        'domain_name'     => $name,
+                        'autorenew'       => 'OFF',
                         'tld'             => $tld,
                         'expiration_date' => (date('Y') + 1) . '-01-01 00:00:00',
                         'auth_code'       => $tld === 'be' ? null : 'TEST1221TSET',

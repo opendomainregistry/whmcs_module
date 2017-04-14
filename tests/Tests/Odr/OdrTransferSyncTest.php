@@ -149,6 +149,9 @@ class OdrTransferSyncTest extends UnitTestCase
         $result = array(
             'completed'  => true,
             'expirydate' => date('Y') + 1 . '-01-01 00:00:00',
+            'failed'     => false,
+            'reason'     => null,
+            'error'      => null,
         );
 
         self::assertEquals($result, odr_TransferSync($data));
@@ -188,8 +191,11 @@ class OdrTransferSyncTest extends UnitTestCase
         );
 
         $result = array(
-            'failed' => true,
-            'reason' => 'Domain test.nl is currently in the following status: DELETED',
+            'failed'     => true,
+            'reason'     => 'Domain test.nl is currently in the following status: DELETED',
+            'completed'  => false,
+            'expirydate' => null,
+            'error'      => null,
         );
 
         self::assertEquals($result, odr_TransferSync($data));
@@ -229,8 +235,11 @@ class OdrTransferSyncTest extends UnitTestCase
         );
 
         $result = array(
-            'failed' => true,
-            'reason' => 'Domain test.nl is currently in the following status: QUARANTINE',
+            'failed'     => true,
+            'reason'     => 'Domain test.nl is currently in the following status: QUARANTINE',
+            'completed'  => false,
+            'expirydate' => null,
+            'error'      => null,
         );
 
         self::assertEquals($result, odr_TransferSync($data));
@@ -270,7 +279,11 @@ class OdrTransferSyncTest extends UnitTestCase
         );
 
         $result = array(
-            'error' => 'Domain test.nl is still in the following status: PENDING',
+            'error'      => 'Domain test.nl is still in the following status: PENDING',
+            'completed'  => false,
+            'expirydate' => null,
+            'failed'     => false,
+            'reason'     => null,
         );
 
         self::assertEquals($result, odr_TransferSync($data));

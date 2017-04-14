@@ -465,7 +465,7 @@ function odr_RenewDomain($params)
     if (in_array($result['response']['status'], $allowedStatuses, true)) {
         $response = array();
 
-        if ($result['response']['autorenew'] === 'OFF') {
+        if (empty($result['response']['autorenew']) || $result['response']['autorenew'] === 'OFF') {
             return array(
                 'error' => 'Renewal is impossible',
             );
@@ -478,7 +478,7 @@ function odr_RenewDomain($params)
 
     if ($result['response']['status'] !== 'QUARANTINE') {
         return array(
-            'error' => 'Invalid domain status',
+            'error' => 'Renewal is impossible, invalid domain status',
         );
     }
 

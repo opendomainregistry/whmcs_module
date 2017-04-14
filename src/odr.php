@@ -161,7 +161,7 @@ function odr_GetNameservers($params)
     $nameservers = array();
 
     foreach ($resp['nameservers'] as $ns) {
-        $nameservers['ns' . $i] = $ns;
+        $nameservers['ns' . $i] = is_array($ns) ? $ns['host'] : $ns;
 
         $i++;
     }
@@ -457,7 +457,12 @@ function odr_RenewDomain($params)
         );
     }
 
-    if ($result['response']['status'] !== 'QUARANTINE') {
+    $allowedStatuses = array(
+        'REGISTERED',
+        'DELETE_SCHEDULED',
+    );
+
+    if (in_array($result['response']['status'], $allowedStatuses, true)) {
         $response = array();
 
         if ($result['response']['autorenew'] === 'OFF') {
@@ -466,9 +471,15 @@ function odr_RenewDomain($params)
             );
         }
 
-        $response['status'] = 'Domain Renewed';
+        $response['status'] = 'Domain Renewed. Please be aware, that this operation only changes the date in WHMCS and not in ODR. ODR will renew domain on it\'s own and you can always obtain correct date using Sync';
 
         return $response;
+    }
+
+    if ($result['response']['status'] !== 'QUARANTINE') {
+        return array(
+            'error' => 'Invalid domain status',
+        );
     }
 
     $reactivate = $module->reactivateDomain($params['domainname'])->getResult();
@@ -553,7 +564,13 @@ function odr_TransferSync($params)
         );
     }
 
-    $response = array();
+    $response = array(
+        'completed'  => false,
+        'expirydate' => null,
+        'failed'     => false,
+        'reason'     => null,
+        'error'      => null,
+    );
 
     if ($result['response']['status'] === 'REGISTERED') {
         $response['completed']  = true;
@@ -595,7 +612,11 @@ function odr_Sync($params)
         );
     }
 
-    $response = array();
+    $response = array(
+        'active'     => false,
+        'expired'    => false,
+        'expirydate' => null,
+    );
 
     $domain = $result['response'];
 
